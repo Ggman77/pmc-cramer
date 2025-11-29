@@ -617,6 +617,8 @@
         // Проверка доступа админа
         function checkAdminAccess() {
             const password = document.getElementById('adminPassword').value;
+            console.log("Введенный пароль:", password, "Ожидаемый пароль:", ADMIN_PASSWORD);
+            
             if (password === ADMIN_PASSWORD) {
                 document.getElementById('adminEditor').classList.remove('active');
                 document.getElementById('editorToolbar').classList.add('active');
@@ -624,6 +626,8 @@
                 showNotification('Редактор активирован', 'success');
             } else {
                 showNotification('Неверный пароль', 'error');
+                // Очищаем поле пароля при ошибке
+                document.getElementById('adminPassword').value = '';
             }
         }
 
@@ -638,8 +642,13 @@
         function loadSiteData() {
             const savedData = localStorage.getItem('cramer_site_data');
             if (savedData) {
-                const data = JSON.parse(savedData);
-                applySiteData(data);
+                try {
+                    const data = JSON.parse(savedData);
+                    applySiteData(data);
+                    console.log('Данные сайта загружены');
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
             }
         }
 
@@ -655,6 +664,24 @@
                     }
                 });
             }
+            
+            // Восстанавливаем цветовую схему если есть
+            if (data.colorScheme) {
+                document.documentElement.style.setProperty('--primary-color', data.colorScheme);
+                updateActiveColorOption(data.colorScheme);
+            }
+        }
+
+        // Обновление активной цветовой опции
+        function updateActiveColorScheme(color) {
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.remove('active');
+                if (opt.style.background === color || 
+                    opt.style.backgroundColor === color ||
+                    opt.getAttribute('data-color') === color) {
+                    opt.classList.add('active');
+                }
+            });
         }
 
         // Сохранение изменений
@@ -698,6 +725,17 @@
             document.documentElement.style.setProperty('--primary-color', color);
             document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
             event.target.classList.add('active');
+        }
+
+        // Обновление активной цветовой опции
+        function updateActiveColorOption(color) {
+            document.querySelectorAll('.color-option').forEach(opt => {
+                opt.classList.remove('active');
+                // Проверяем background и backgroundColor
+                if (opt.style.background === color || opt.style.backgroundColor === color) {
+                    opt.classList.add('active');
+                }
+            });
         }
 
         // Экспорт сайта
@@ -788,6 +826,10 @@
                 clearTimeout(logoClickTimer);
                 logoClickCount = 0;
                 document.getElementById('adminEditor').classList.add('active');
+                // Фокусируемся на поле ввода пароля
+                setTimeout(() => {
+                    document.getElementById('adminPassword').focus();
+                }, 100);
             }
         }
 
@@ -797,6 +839,9 @@
             if (e.ctrlKey && e.shiftKey && e.key === 'E') {
                 e.preventDefault();
                 document.getElementById('adminEditor').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('adminPassword').focus();
+                }, 100);
             }
 
             // ESC для выхода
@@ -823,6 +868,11 @@
                 e.preventDefault();
                 undoChange();
             }
+            
+            // Enter в поле пароля
+            if (e.key === 'Enter' && document.getElementById('adminEditor').classList.contains('active')) {
+                checkAdminAccess();
+            }
         });
 
         // Система уведомлений
@@ -836,13 +886,14 @@
                 top: 100px;
                 right: 20px;
                 background: ${type === 'success' ? '#32a852' : type === 'error' ? '#dc3545' : '#228B22'};
-                color: #000;
+                color: white;
                 padding: 1rem 2rem;
                 border-radius: 5px;
                 font-weight: bold;
                 z-index: 3000;
                 transform: translateX(400px);
                 transition: transform 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             `;
             
             document.body.appendChild(notification);
@@ -854,7 +905,9 @@
             setTimeout(() => {
                 notification.style.transform = 'translateX(400px)';
                 setTimeout(() => {
-                    document.body.removeChild(notification);
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
                 }, 300);
             }, 3000);
         }
