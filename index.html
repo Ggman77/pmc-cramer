@@ -540,7 +540,7 @@
                 <div class="form-group">
                     <label for="adminPassword">Пароль доступа:</label>
                     <input type="password" id="adminPassword" class="webhook-input" 
-                           placeholder="Введите пароль администратора">
+                           placeholder="Введите пароль администратора" autocomplete="off">
                 </div>
                 <button class="cta-button" onclick="checkPassword()" style="width: 100%;">
                     Войти
@@ -802,16 +802,56 @@
     </footer>
 
     <script>
-        // 🔐 ЗАЩИЩЕННАЯ КОНФИГУРАЦИЯ
-        const ADMIN_PASSWORD = "CRAMER2024"; // ⚠️ СМЕНИТЕ ЭТОТ ПАРОЛЬ!
-        const ENCRYPTION_KEY = "CRAMER_SECURE_2024";
+        // 🔐 ЗАЩИЩЕННАЯ КОНФИГУРАЦИЯ С ХЭШИРОВАНИЕМ
+        // Хэш пароля "admin123" (СМЕНИТЕ НА СВОЙ!)
+        const PASSWORD_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
+        const ENCRYPTION_KEY = "CRAMER_SECURE_" + Math.random().toString(36).substr(2, 9);
         
         let DISCORD_WEBHOOK_URL = '';
         let isAuthenticated = false;
 
-        // Шифрование URL вебхука
+        // SHA256 хэш-функция
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Проверка пароля через хэш
+        async function checkPassword() {
+            const passwordInput = document.getElementById('adminPassword').value;
+            const inputHash = await sha256(passwordInput);
+            
+            if (inputHash === PASSWORD_HASH) {
+                isAuthenticated = true;
+                showNotification('Доступ разрешен', 'success');
+                closePasswordModal();
+                openWebhookModal();
+                
+                // Сброс счетчика попыток
+                localStorage.setItem('login_attempts', '0');
+            } else {
+                showNotification('Неверный пароль', 'error');
+                document.getElementById('adminPassword').value = '';
+                
+                // Заблокировать после неудачных попыток
+                const attempts = parseInt(localStorage.getItem('login_attempts') || '0') + 1;
+                localStorage.setItem('login_attempts', attempts.toString());
+                
+                if (attempts >= 3) {
+                    showNotification('Доступ заблокирован на 10 минут', 'error');
+                    setTimeout(() => {
+                        localStorage.setItem('login_attempts', '0');
+                        showNotification('Доступ разблокирован', 'success');
+                    }, 10 * 60 * 1000);
+                    closePasswordModal();
+                }
+            }
+        }
+
+        // Шифрование вебхука
         function encryptWebhookUrl(url) {
-            // Простое шифрование для усложнения доступа
             return btoa(url + ENCRYPTION_KEY);
         }
 
@@ -831,33 +871,6 @@
                 DISCORD_WEBHOOK_URL = decryptWebhookUrl(encryptedWebhook);
                 if (DISCORD_WEBHOOK_URL) {
                     showNotification('Discord вебхук загружен', 'success');
-                }
-            }
-        }
-
-        // 🔐 Парольная защита
-        function checkPassword() {
-            const password = document.getElementById('adminPassword').value;
-            
-            if (password === ADMIN_PASSWORD) {
-                isAuthenticated = true;
-                showNotification('Доступ разрешен', 'success');
-                closePasswordModal();
-                openWebhookModal();
-            } else {
-                showNotification('Неверный пароль', 'error');
-                document.getElementById('adminPassword').value = '';
-                
-                // Заблокировать после 3 неудачных попыток
-                const attempts = parseInt(localStorage.getItem('login_attempts') || '0') + 1;
-                localStorage.setItem('login_attempts', attempts.toString());
-                
-                if (attempts >= 3) {
-                    showNotification('Доступ заблокирован на 5 минут', 'error');
-                    setTimeout(() => {
-                        localStorage.setItem('login_attempts', '0');
-                    }, 5 * 60 * 1000);
-                    closePasswordModal();
                 }
             }
         }
@@ -888,7 +901,7 @@
 
         function closeWebhookModal() {
             document.getElementById('webhookModal').style.display = 'none';
-            isAuthenticated = false; // Сброс авторизации при закрытии
+            isAuthenticated = false;
         }
 
         function saveWebhook() {
@@ -904,7 +917,6 @@
                 localStorage.setItem('cramer_encrypted_webhook', encrypted);
                 showNotification('Discord вебхук сохранен и зашифрован!', 'success');
                 
-                // Автоматическое тестирование
                 testWebhook();
                 
             } else {
