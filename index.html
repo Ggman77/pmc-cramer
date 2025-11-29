@@ -19,6 +19,7 @@
             --medium-bg: #1a1a1a;
             --light-bg: #2d2d2d;
             --text-color: #e0e0e0;
+            --accent-color: #b8860b;
         }
 
         body {
@@ -33,13 +34,18 @@
         }
 
         body.edit-mode [data-editable]:hover {
-            outline: 2px dashed #b8860b;
+            outline: 2px dashed var(--accent-color);
             cursor: text;
         }
 
         body.edit-mode [data-draggable]:hover {
-            outline: 2px dashed #228B22;
+            outline: 2px dashed var(--primary-color);
             cursor: move;
+        }
+
+        body.edit-mode [data-bg-editable]:hover {
+            outline: 4px dashed var(--primary-color);
+            cursor: crosshair;
         }
 
         .container {
@@ -103,18 +109,24 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s;
         }
 
         .toolbar-btn:hover {
             background: var(--secondary-color);
+            transform: translateY(-2px);
         }
 
         .toolbar-btn.save {
-            background: #b8860b;
+            background: var(--accent-color);
         }
 
         .toolbar-btn.undo {
             background: #666;
+        }
+
+        .toolbar-btn.delete {
+            background: #dc3545;
         }
 
         .color-picker {
@@ -143,13 +155,67 @@
             padding: 1rem;
             border-radius: 8px;
             border: 1px solid var(--primary-color);
-            min-width: 250px;
+            min-width: 300px;
             display: none;
             z-index: 9998;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .element-inspector.active {
             display: block;
+        }
+
+        .inspector-section {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #444;
+        }
+
+        .inspector-section h5 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .inspector-input {
+            width: 100%;
+            padding: 8px;
+            background: var(--light-bg);
+            border: 1px solid #444;
+            color: white;
+            border-radius: 3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .inspector-select {
+            width: 100%;
+            padding: 8px;
+            background: var(--light-bg);
+            border: 1px solid #444;
+            color: white;
+            border-radius: 3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .style-presets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            margin-top: 0.5rem;
+        }
+
+        .style-preset {
+            padding: 5px;
+            background: var(--light-bg);
+            border: 1px solid #444;
+            border-radius: 3px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .style-preset:hover {
+            background: var(--primary-color);
         }
 
         /* Header */
@@ -274,7 +340,7 @@
         }
 
         .social-button:hover {
-            background: #32a852;
+            background: var(--secondary-color);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(34, 139, 34, 0.3);
         }
@@ -305,7 +371,7 @@
 
         .cta-button {
             display: inline-block;
-            background: #b8860b;
+            background: var(--accent-color);
             color: var(--dark-bg);
             padding: 12px 30px;
             text-decoration: none;
@@ -411,6 +477,31 @@
             transition: all 0.3s ease;
         }
 
+        /* Gallery Section */
+        .gallery {
+            background: var(--medium-bg);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
         /* Footer */
         footer {
             background: var(--medium-bg);
@@ -447,6 +538,97 @@
                 flex-direction: column;
                 gap: 0.5rem;
             }
+
+            .element-inspector {
+                width: 90%;
+                right: 5%;
+            }
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .notification.success {
+            background: #32a852;
+            color: white;
+        }
+
+        .notification.error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .notification.info {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Add Section Button */
+        .add-section-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .add-section-btn:hover {
+            transform: scale(1.1);
+            background: var(--secondary-color);
+        }
+
+        /* Section Controls */
+        .section-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        section:hover .section-controls {
+            opacity: 1;
+        }
+
+        .section-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .section-btn.delete {
+            background: #dc3545;
         }
     </style>
 </head>
@@ -454,14 +636,14 @@
     <!-- Admin Editor Overlay -->
     <div class="admin-editor" id="adminEditor">
         <div class="editor-panel">
-            <h3>🔐 Доступ к редактору</h3>
+            <h3>🔐 Расширенный редактор сайта</h3>
             <div style="margin: 1.5rem 0;">
                 <input type="password" id="adminPassword" placeholder="Пароль администратора" 
                        style="width: 100%; padding: 12px; margin-bottom: 1rem; background: var(--light-bg); border: 1px solid var(--primary-color); color: white; border-radius: 4px;">
                 <button onclick="checkAdminAccess()" class="cta-button" style="width: 100%;">Войти в редактор</button>
             </div>
             <div style="text-align: center; color: #888; font-size: 0.8rem;">
-                Нажмите ESC для выхода
+                Нажмите ESC для выхода | Ctrl+Shift+E для открытия
             </div>
         </div>
     </div>
@@ -470,26 +652,111 @@
     <div class="editor-toolbar" id="editorToolbar">
         <button class="toolbar-btn save" onclick="saveChanges()">💾 Сохранить</button>
         <button class="toolbar-btn undo" onclick="undoChange()">↶ Отменить</button>
-        <button class="toolbar-btn" onclick="toggleEditMode()">✏️ Режим редактирования</button>
+        <button class="toolbar-btn" onclick="toggleEditMode()" id="editModeBtn">✏️ Режим редактирования</button>
+        <button class="toolbar-btn" onclick="toggleSectionsManager()">📋 Управление секциями</button>
         <div class="color-picker">
             <div class="color-option active" style="background: #228B22;" onclick="changeColorScheme('#228B22')"></div>
             <div class="color-option" style="background: #b8860b;" onclick="changeColorScheme('#b8860b')"></div>
             <div class="color-option" style="background: #dc3545;" onclick="changeColorScheme('#dc3545')"></div>
             <div class="color-option" style="background: #5865F2;" onclick="changeColorScheme('#5865F2')"></div>
+            <div class="color-option" style="background: #8A2BE2;" onclick="changeColorScheme('#8A2BE2')"></div>
+            <div class="color-option" style="background: #FF8C00;" onclick="changeColorScheme('#FF8C00')"></div>
         </div>
         <button class="toolbar-btn" onclick="exportSite()">📤 Экспорт</button>
+        <button class="toolbar-btn" onclick="importSite()">📥 Импорт</button>
+        <button class="toolbar-btn" onclick="resetSite()">🔄 Сброс</button>
         <button class="toolbar-btn" onclick="exitEditor()">🚪 Выйти</button>
     </div>
 
     <!-- Element Inspector -->
     <div class="element-inspector" id="elementInspector">
         <h4>Настройки элемента</h4>
-        <div style="margin-top: 1rem;">
-            <input type="text" id="editText" style="width: 100%; padding: 8px; background: var(--light-bg); border: 1px solid #444; color: white; border-radius: 3px; margin-bottom: 0.5rem;">
-            <input type="color" id="editColor" style="width: 100%; margin-bottom: 0.5rem;">
-            <button onclick="applyElementChanges()" class="toolbar-btn" style="width: 100%;">Применить</button>
+        
+        <div class="inspector-section">
+            <h5>Текст</h5>
+            <input type="text" id="editText" class="inspector-input" placeholder="Текст элемента">
+        </div>
+        
+        <div class="inspector-section">
+            <h5>Стиль текста</h5>
+            <select id="editFontSize" class="inspector-select">
+                <option value="">Размер шрифта</option>
+                <option value="12px">Маленький (12px)</option>
+                <option value="14px">Обычный (14px)</option>
+                <option value="16px">Средний (16px)</option>
+                <option value="18px">Большой (18px)</option>
+                <option value="24px">Заголовок (24px)</option>
+                <option value="32px">Крупный (32px)</option>
+            </select>
+            
+            <select id="editFontWeight" class="inspector-select">
+                <option value="">Насыщенность</option>
+                <option value="normal">Обычный</option>
+                <option value="bold">Жирный</option>
+                <option value="bolder">Очень жирный</option>
+            </select>
+            
+            <select id="editTextAlign" class="inspector-select">
+                <option value="">Выравнивание</option>
+                <option value="left">По левому краю</option>
+                <option value="center">По центру</option>
+                <option value="right">По правому краю</option>
+                <option value="justify">По ширине</option>
+            </select>
+            
+            <input type="color" id="editColor" class="inspector-input">
+        </div>
+        
+        <div class="inspector-section">
+            <h5>Фон элемента</h5>
+            <input type="color" id="editBgColor" class="inspector-input">
+            <input type="text" id="editBgImage" class="inspector-input" placeholder="URL изображения">
+            <button onclick="clearBackground()" class="toolbar-btn" style="width: 100%; margin-top: 5px;">Очистить фон</button>
+        </div>
+        
+        <div class="inspector-section">
+            <h5>Границы и отступы</h5>
+            <input type="text" id="editPadding" class="inspector-input" placeholder="Отступы (например: 10px)">
+            <input type="text" id="editMargin" class="inspector-input" placeholder="Внешние отступы">
+            <input type="text" id="editBorderRadius" class="inspector-input" placeholder="Закругление (например: 5px)">
+        </div>
+        
+        <div class="inspector-section">
+            <h5>Быстрые стили</h5>
+            <div class="style-presets">
+                <div class="style-preset" onclick="applyStylePreset('military')">Военный</div>
+                <div class="style-preset" onclick="applyStylePreset('modern')">Современный</div>
+                <div class="style-preset" onclick="applyStylePreset('elegant')">Элегантный</div>
+                <div class="style-preset" onclick="applyStylePreset('minimal')">Минимализм</div>
+            </div>
+        </div>
+        
+        <div class="inspector-section">
+            <h5>Действия</h5>
+            <button onclick="applyElementChanges()" class="toolbar-btn" style="width: 100%; margin-bottom: 5px;">Применить изменения</button>
+            <button onclick="duplicateElement()" class="toolbar-btn" style="width: 100%; margin-bottom: 5px;">Дублировать элемент</button>
+            <button onclick="deleteElement()" class="toolbar-btn delete" style="width: 100%;">Удалить элемент</button>
         </div>
     </div>
+
+    <!-- Sections Manager -->
+    <div class="admin-editor" id="sectionsManager">
+        <div class="editor-panel" style="max-width: 700px;">
+            <h3>📋 Управление секциями</h3>
+            <div style="margin: 1.5rem 0; max-height: 400px; overflow-y: auto;">
+                <div id="sectionsList">
+                    <!-- Sections will be listed here -->
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="addNewSection()" class="toolbar-btn" style="flex: 1;">➕ Добавить секцию</button>
+                <button onclick="toggleSectionsManager()" class="toolbar-btn" style="flex: 1;">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Section Button -->
+    <div class="add-section-btn" id="addSectionBtn" onclick="toggleSectionsManager()" title="Добавить секцию">+</div>
 
     <!-- Header -->
     <header>
@@ -504,6 +771,7 @@
                         <li><a href="#about" data-editable="true" data-content="nav-about">О нас</a></li>
                         <li><a href="#units" data-editable="true" data-content="nav-units">Подразделения</a></li>
                         <li><a href="#operations" data-editable="true" data-content="nav-operations">Операции</a></li>
+                        <li><a href="#gallery" data-editable="true" data-content="nav-gallery">Галерея</a></li>
                         <li><a href="#recruitment" data-editable="true" data-content="nav-recruitment">Набор</a></li>
                         <li><a href="#contact" data-editable="true" data-content="nav-contact">Контакты</a></li>
                     </ul>
@@ -513,7 +781,12 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" data-bg-editable="true" id="hero-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('hero-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('hero-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('hero-section')">×</div>
+        </div>
         <div class="container">
             <div class="hero-content">
                 <h1 data-editable="true" data-content="hero-title">ЧВК CRAMER</h1>
@@ -539,7 +812,12 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="about" data-draggable="true">
+    <section id="about" class="about" data-draggable="true" id="about-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('about-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('about-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('about-section')">×</div>
+        </div>
         <div class="container">
             <h2 class="section-title" data-editable="true" data-content="about-title">Кто мы</h2>
             <div class="about-content">
@@ -570,7 +848,12 @@
     </section>
 
     <!-- Units Section -->
-    <section id="units" data-draggable="true">
+    <section id="units" data-draggable="true" id="units-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('units-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('units-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('units-section')">×</div>
+        </div>
         <div class="container">
             <h2 class="section-title" data-editable="true" data-content="units-title">Наши подразделения</h2>
             <div class="units-grid">
@@ -590,8 +873,31 @@
         </div>
     </section>
 
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery" data-draggable="true" id="gallery-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('gallery-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('gallery-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('gallery-section')">×</div>
+        </div>
+        <div class="container">
+            <h2 class="section-title" data-editable="true" data-content="gallery-title">Галерея</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item" data-bg-editable="true" style="background-image: url('https://images.unsplash.com/photo-1551524164-6ca88f2930e0?ixlib=rb-4.0.3');" data-content="gallery-image-1"></div>
+                <div class="gallery-item" data-bg-editable="true" style="background-image: url('https://images.unsplash.com/photo-1540959733332-0d8cd9d93451?ixlib=rb-4.0.3');" data-content="gallery-image-2"></div>
+                <div class="gallery-item" data-bg-editable="true" style="background-image: url('https://images.unsplash.com/photo-1509343256512-d77a5cb7591b?ixlib=rb-4.0.3');" data-content="gallery-image-3"></div>
+                <div class="gallery-item" data-bg-editable="true" style="background-image: url('https://images.unsplash.com/photo-1509803874385-db7c23652552?ixlib=rb-4.0.3');" data-content="gallery-image-4"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer id="contact" data-draggable="true">
+    <footer id="contact" data-draggable="true" id="footer-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('footer-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('footer-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('footer-section')">×</div>
+        </div>
         <div class="container">
             <div class="footer-content">
                 <div class="logo-container">
@@ -617,16 +923,15 @@
         // Проверка доступа админа
         function checkAdminAccess() {
             const password = document.getElementById('adminPassword').value;
-            console.log("Введенный пароль:", password, "Ожидаемый пароль:", ADMIN_PASSWORD);
             
             if (password === ADMIN_PASSWORD) {
                 document.getElementById('adminEditor').classList.remove('active');
                 document.getElementById('editorToolbar').classList.add('active');
+                document.getElementById('addSectionBtn').style.display = 'flex';
                 loadSiteData();
-                showNotification('Редактор активирован', 'success');
+                showNotification('Расширенный редактор активирован', 'success');
             } else {
                 showNotification('Неверный пароль', 'error');
-                // Очищаем поле пароля при ошибке
                 document.getElementById('adminPassword').value = '';
             }
         }
@@ -635,6 +940,8 @@
         function toggleEditMode() {
             isEditMode = !isEditMode;
             document.body.classList.toggle('edit-mode', isEditMode);
+            const btn = document.getElementById('editModeBtn');
+            btn.textContent = isEditMode ? '✅ Режим редактирования' : '✏️ Режим редактирования';
             showNotification(isEditMode ? 'Режим редактирования включен' : 'Режим редактирования выключен', 'success');
         }
 
@@ -659,6 +966,8 @@
                 elements.forEach(element => {
                     if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                         element.value = value;
+                    } else if (element.hasAttribute('data-bg-editable')) {
+                        element.style.backgroundImage = `url('${value}')`;
                     } else {
                         element.textContent = value;
                     }
@@ -670,15 +979,28 @@
                 document.documentElement.style.setProperty('--primary-color', data.colorScheme);
                 updateActiveColorOption(data.colorScheme);
             }
+            
+            // Восстанавливаем дополнительные стили
+            if (data.customStyles) {
+                applyCustomStyles(data.customStyles);
+            }
+        }
+
+        // Применение пользовательских стилей
+        function applyCustomStyles(styles) {
+            for (const [selector, styleObj] of Object.entries(styles)) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    Object.assign(element.style, styleObj);
+                }
+            }
         }
 
         // Обновление активной цветовой опции
-        function updateActiveColorScheme(color) {
+        function updateActiveColorOption(color) {
             document.querySelectorAll('.color-option').forEach(opt => {
                 opt.classList.remove('active');
-                if (opt.style.background === color || 
-                    opt.style.backgroundColor === color ||
-                    opt.getAttribute('data-color') === color) {
+                if (opt.style.background === color || opt.style.backgroundColor === color) {
                     opt.classList.add('active');
                 }
             });
@@ -691,16 +1013,41 @@
             
             editableElements.forEach(element => {
                 const key = element.getAttribute('data-content');
-                const value = element.textContent || element.value;
+                let value;
+                
+                if (element.hasAttribute('data-bg-editable')) {
+                    value = element.style.backgroundImage.replace('url("', '').replace('")', '');
+                } else {
+                    value = element.textContent || element.value;
+                }
+                
                 siteData[key] = value;
             });
 
             // Сохраняем цветовую схему
             siteData.colorScheme = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+            
+            // Сохраняем дополнительные стили
+            siteData.customStyles = getAllCustomStyles();
 
             localStorage.setItem('cramer_site_data', JSON.stringify(siteData));
             addToHistory(siteData);
             showNotification('Изменения сохранены', 'success');
+        }
+
+        // Получение всех пользовательских стилей
+        function getAllCustomStyles() {
+            const styles = {};
+            const elements = document.querySelectorAll('[data-content]');
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-content');
+                if (element.style.cssText && element.style.cssText.length > 0) {
+                    styles[`[data-content="${key}"]`] = {...element.style};
+                }
+            });
+            
+            return styles;
         }
 
         // Добавление в историю изменений
@@ -717,6 +1064,8 @@
                 const data = JSON.parse(changeHistory[currentHistoryIndex]);
                 applySiteData(data);
                 showNotification('Изменение отменено', 'success');
+            } else {
+                showNotification('Нет действий для отмены', 'info');
             }
         }
 
@@ -725,17 +1074,7 @@
             document.documentElement.style.setProperty('--primary-color', color);
             document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
             event.target.classList.add('active');
-        }
-
-        // Обновление активной цветовой опции
-        function updateActiveColorOption(color) {
-            document.querySelectorAll('.color-option').forEach(opt => {
-                opt.classList.remove('active');
-                // Проверяем background и backgroundColor
-                if (opt.style.background === color || opt.style.backgroundColor === color) {
-                    opt.classList.add('active');
-                }
-            });
+            showNotification('Цветовая схема изменена', 'success');
         }
 
         // Экспорт сайта
@@ -750,9 +1089,41 @@
             showNotification('Сайт экспортирован', 'success');
         }
 
+        // Импорт сайта
+        function importSite() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        localStorage.setItem('cramer_site_data', JSON.stringify(data));
+                        applySiteData(data);
+                        showNotification('Сайт успешно импортирован', 'success');
+                    } catch (error) {
+                        showNotification('Ошибка при импорте файла', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // Сброс сайта
+        function resetSite() {
+            if (confirm('Вы уверены, что хотите сбросить все изменения? Это действие нельзя отменить.')) {
+                localStorage.removeItem('cramer_site_data');
+                location.reload();
+            }
+        }
+
         // Выход из редактора
         function exitEditor() {
             document.getElementById('editorToolbar').classList.remove('active');
+            document.getElementById('addSectionBtn').style.display = 'none';
             document.body.classList.remove('edit-mode');
             isEditMode = false;
             showNotification('Редактор закрыт', 'success');
@@ -763,11 +1134,18 @@
             if (!isEditMode) return;
 
             const editableElement = e.target.closest('[data-editable]');
+            const bgEditableElement = e.target.closest('[data-bg-editable]');
+            
             if (editableElement) {
                 e.preventDefault();
                 e.stopPropagation();
                 currentElement = editableElement;
                 showElementInspector(editableElement);
+            } else if (bgEditableElement) {
+                e.preventDefault();
+                e.stopPropagation();
+                currentElement = bgEditableElement;
+                showElementInspector(bgEditableElement);
             }
         });
 
@@ -776,12 +1154,57 @@
             const inspector = document.getElementById('elementInspector');
             const textInput = document.getElementById('editText');
             const colorInput = document.getElementById('editColor');
+            const bgColorInput = document.getElementById('editBgColor');
+            const bgImageInput = document.getElementById('editBgImage');
+            const fontSizeInput = document.getElementById('editFontSize');
+            const fontWeightInput = document.getElementById('editFontWeight');
+            const textAlignInput = document.getElementById('editTextAlign');
+            const paddingInput = document.getElementById('editPadding');
+            const marginInput = document.getElementById('editMargin');
+            const borderRadiusInput = document.getElementById('editBorderRadius');
 
-            textInput.value = element.textContent;
+            // Заполняем поля текущими значениями
+            if (element.hasAttribute('data-bg-editable')) {
+                textInput.style.display = 'none';
+                textInput.value = '';
+            } else {
+                textInput.style.display = 'block';
+                textInput.value = element.textContent;
+            }
             
-            // Получаем цвет элемента
-            const color = getComputedStyle(element).color;
-            colorInput.value = rgbToHex(color);
+            // Получаем стили элемента
+            const styles = getComputedStyle(element);
+            
+            // Цвет текста
+            colorInput.value = rgbToHex(styles.color);
+            
+            // Цвет фона
+            bgColorInput.value = rgbToHex(styles.backgroundColor);
+            
+            // Изображение фона
+            if (element.style.backgroundImage && element.style.backgroundImage !== 'none') {
+                bgImageInput.value = element.style.backgroundImage.replace('url("', '').replace('")', '');
+            } else {
+                bgImageInput.value = '';
+            }
+            
+            // Размер шрифта
+            fontSizeInput.value = styles.fontSize;
+            
+            // Насыщенность шрифта
+            fontWeightInput.value = styles.fontWeight;
+            
+            // Выравнивание текста
+            textAlignInput.value = styles.textAlign;
+            
+            // Отступы
+            paddingInput.value = styles.padding;
+            
+            // Внешние отступы
+            marginInput.value = styles.margin;
+            
+            // Закругление
+            borderRadiusInput.value = styles.borderRadius;
 
             inspector.classList.add('active');
             inspector.style.top = (element.getBoundingClientRect().top + 80) + 'px';
@@ -793,16 +1216,119 @@
 
             const textInput = document.getElementById('editText');
             const colorInput = document.getElementById('editColor');
+            const bgColorInput = document.getElementById('editBgColor');
+            const bgImageInput = document.getElementById('editBgImage');
+            const fontSizeInput = document.getElementById('editFontSize');
+            const fontWeightInput = document.getElementById('editFontWeight');
+            const textAlignInput = document.getElementById('editTextAlign');
+            const paddingInput = document.getElementById('editPadding');
+            const marginInput = document.getElementById('editMargin');
+            const borderRadiusInput = document.getElementById('editBorderRadius');
 
-            currentElement.textContent = textInput.value;
-            currentElement.style.color = colorInput.value;
+            // Применяем изменения только если элемент не является фоном
+            if (!currentElement.hasAttribute('data-bg-editable')) {
+                currentElement.textContent = textInput.value;
+            }
+            
+            // Применяем стили
+            if (colorInput.value) currentElement.style.color = colorInput.value;
+            if (bgColorInput.value) currentElement.style.backgroundColor = bgColorInput.value;
+            if (bgImageInput.value) currentElement.style.backgroundImage = `url('${bgImageInput.value}')`;
+            if (fontSizeInput.value) currentElement.style.fontSize = fontSizeInput.value;
+            if (fontWeightInput.value) currentElement.style.fontWeight = fontWeightInput.value;
+            if (textAlignInput.value) currentElement.style.textAlign = textAlignInput.value;
+            if (paddingInput.value) currentElement.style.padding = paddingInput.value;
+            if (marginInput.value) currentElement.style.margin = marginInput.value;
+            if (borderRadiusInput.value) currentElement.style.borderRadius = borderRadiusInput.value;
 
             document.getElementById('elementInspector').classList.remove('active');
             showNotification('Элемент обновлен', 'success');
         }
 
+        // Очистить фон
+        function clearBackground() {
+            if (currentElement) {
+                currentElement.style.backgroundImage = 'none';
+                currentElement.style.backgroundColor = 'transparent';
+                document.getElementById('editBgColor').value = '';
+                document.getElementById('editBgImage').value = '';
+                showNotification('Фон очищен', 'success');
+            }
+        }
+
+        // Дублировать элемент
+        function duplicateElement() {
+            if (currentElement) {
+                const clone = currentElement.cloneNode(true);
+                currentElement.parentNode.insertBefore(clone, currentElement.nextSibling);
+                showNotification('Элемент дублирован', 'success');
+            }
+        }
+
+        // Удалить элемент
+        function deleteElement() {
+            if (currentElement && currentElement.hasAttribute('data-content')) {
+                if (confirm('Удалить этот элемент?')) {
+                    currentElement.remove();
+                    document.getElementById('elementInspector').classList.remove('active');
+                    showNotification('Элемент удален', 'success');
+                }
+            } else {
+                showNotification('Этот элемент нельзя удалить', 'error');
+            }
+        }
+
+        // Применить стиль-пресет
+        function applyStylePreset(preset) {
+            if (!currentElement) return;
+            
+            const presets = {
+                military: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    border: '2px solid #228B22',
+                    padding: '10px',
+                    backgroundColor: '#1a1a1a'
+                },
+                modern: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontWeight: 'normal',
+                    borderRadius: '8px',
+                    padding: '15px',
+                    backgroundColor: '#2d2d2d',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                },
+                elegant: {
+                    fontFamily: 'Georgia, serif',
+                    fontStyle: 'italic',
+                    padding: '20px',
+                    backgroundColor: 'transparent',
+                    borderBottom: '2px solid #b8860b'
+                },
+                minimal: {
+                    fontFamily: 'Arial, sans-serif',
+                    fontWeight: '300',
+                    padding: '5px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    margin: '0'
+                }
+            };
+            
+            if (presets[preset]) {
+                Object.assign(currentElement.style, presets[preset]);
+                showNotification(`Стиль "${preset}" применен`, 'success');
+            }
+        }
+
         // Конвертация RGB в HEX
         function rgbToHex(rgb) {
+            if (rgb.includes('rgba')) {
+                return '#000000';
+            }
+            
             const result = rgb.match(/\d+/g);
             if (!result) return '#000000';
             return '#' + result.map(x => {
@@ -826,10 +1352,109 @@
                 clearTimeout(logoClickTimer);
                 logoClickCount = 0;
                 document.getElementById('adminEditor').classList.add('active');
-                // Фокусируемся на поле ввода пароля
                 setTimeout(() => {
                     document.getElementById('adminPassword').focus();
                 }, 100);
+            }
+        }
+
+        // Управление секциями
+        function toggleSectionsManager() {
+            const manager = document.getElementById('sectionsManager');
+            if (manager.classList.contains('active')) {
+                manager.classList.remove('active');
+            } else {
+                manager.classList.add('active');
+                updateSectionsList();
+            }
+        }
+
+        function updateSectionsList() {
+            const sectionsList = document.getElementById('sectionsList');
+            sectionsList.innerHTML = '';
+            
+            const sections = document.querySelectorAll('section, footer');
+            sections.forEach((section, index) => {
+                const sectionItem = document.createElement('div');
+                sectionItem.style.cssText = 'padding: 10px; margin-bottom: 10px; background: var(--light-bg); border-radius: 5px; display: flex; justify-content: space-between; align-items: center;';
+                
+                const title = section.querySelector('h2, h1') ? section.querySelector('h2, h1').textContent : 'Секция ' + (index + 1);
+                
+                sectionItem.innerHTML = `
+                    <div>${title}</div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="section-btn" onclick="moveSectionUp('${section.id}')">↑</button>
+                        <button class="section-btn" onclick="moveSectionDown('${section.id}')">↓</button>
+                        <button class="section-btn delete" onclick="removeSection('${section.id}')">×</button>
+                    </div>
+                `;
+                
+                sectionsList.appendChild(sectionItem);
+            });
+        }
+
+        function moveSectionUp(sectionId) {
+            const section = document.getElementById(sectionId);
+            const prevSection = section.previousElementSibling;
+            
+            if (prevSection && prevSection.tagName !== 'HEADER') {
+                section.parentNode.insertBefore(section, prevSection);
+                updateSectionsList();
+                showNotification('Секция перемещена вверх', 'success');
+            }
+        }
+
+        function moveSectionDown(sectionId) {
+            const section = document.getElementById(sectionId);
+            const nextSection = section.nextElementSibling;
+            
+            if (nextSection) {
+                section.parentNode.insertBefore(nextSection, section);
+                updateSectionsList();
+                showNotification('Секция перемещена вниз', 'success');
+            }
+        }
+
+        function removeSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section && confirm('Удалить эту секцию?')) {
+                section.remove();
+                updateSectionsList();
+                showNotification('Секция удалена', 'success');
+            }
+        }
+
+        function addNewSection() {
+            const sectionTypes = [
+                { name: 'Текстовая секция', html: '<section id="new-section"><div class="container"><h2>Новая секция</h2><p>Текст новой секции</p></div></section>' },
+                { name: 'Секция с карточками', html: '<section id="new-section"><div class="container"><h2>Новая секция</h2><div class="units-grid"><div class="unit-card"><h3>Заголовок 1</h3><p>Текст карточки 1</p></div><div class="unit-card"><h3>Заголовок 2</h3><p>Текст карточки 2</p></div></div></div></section>' },
+                { name: 'Галерея', html: '<section id="new-section"><div class="container"><h2>Новая галерея</h2><div class="gallery-grid"><div class="gallery-item" style="background-color: #333;"></div><div class="gallery-item" style="background-color: #333;"></div><div class="gallery-item" style="background-color: #333;"></div></div></div></section>' }
+            ];
+            
+            const type = prompt(`Выберите тип секции:\n1 - Текстовая\n2 - С карточками\n3 - Галерея`);
+            
+            if (type && ['1', '2', '3'].includes(type)) {
+                const sectionHTML = sectionTypes[parseInt(type) - 1].html;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = sectionHTML;
+                const newSection = tempDiv.firstElementChild;
+                
+                // Добавляем контролы для новой секции
+                const controlsHTML = `
+                    <div class="section-controls">
+                        <div class="section-btn" onclick="moveSectionUp('${newSection.id}')">↑</div>
+                        <div class="section-btn" onclick="moveSectionDown('${newSection.id}')">↓</div>
+                        <div class="section-btn delete" onclick="removeSection('${newSection.id}')">×</div>
+                    </div>
+                `;
+                newSection.insertAdjacentHTML('afterbegin', controlsHTML);
+                
+                // Добавляем перед футером
+                const footer = document.querySelector('footer');
+                footer.parentNode.insertBefore(newSection, footer);
+                
+                updateSectionsList();
+                showNotification('Новая секция добавлена', 'success');
             }
         }
 
@@ -848,6 +1473,9 @@
             if (e.key === 'Escape') {
                 if (document.getElementById('adminEditor').classList.contains('active')) {
                     document.getElementById('adminEditor').classList.remove('active');
+                }
+                if (document.getElementById('sectionsManager').classList.contains('active')) {
+                    document.getElementById('sectionsManager').classList.remove('active');
                 }
                 if (document.getElementById('elementInspector').classList.contains('active')) {
                     document.getElementById('elementInspector').classList.remove('active');
@@ -881,20 +1509,6 @@
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: ${type === 'success' ? '#32a852' : type === 'error' ? '#dc3545' : '#228B22'};
-                color: white;
-                padding: 1rem 2rem;
-                border-radius: 5px;
-                font-weight: bold;
-                z-index: 3000;
-                transform: translateX(400px);
-                transition: transform 0.3s ease;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            `;
             
             document.body.appendChild(notification);
             
