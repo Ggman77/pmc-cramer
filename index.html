@@ -545,6 +545,10 @@
                 <button class="cta-button" onclick="checkPassword()" style="width: 100%;">
                     Войти
                 </button>
+                <div id="blockedMessage" style="display: none; margin-top: 1rem; padding: 1rem; background: #dc3545; border-radius: 3px; text-align: center;">
+                    <strong>Доступ заблокирован</strong>
+                    <div id="countdownTimer" style="margin-top: 0.5rem;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -806,9 +810,11 @@
         // Хэш пароля "admin123" (СМЕНИТЕ НА СВОЙ!)
         const PASSWORD_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
         const ENCRYPTION_KEY = "CRAMER_SECURE_" + Math.random().toString(36).substr(2, 9);
+        const BLOCK_DURATION = 10 * 60 * 1000; // 10 минут в миллисекундах
         
         let DISCORD_WEBHOOK_URL = '';
         let isAuthenticated = false;
+        let countdownInterval = null;
 
         // SHA256 хэш-функция
         async function sha256(message) {
@@ -818,8 +824,74 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
+        // Проверка блокировки
+        function checkBlockStatus() {
+            const blockUntil = localStorage.getItem('block_until');
+            if (blockUntil) {
+                const now = Date.now();
+                const blockTime = parseInt(blockUntil);
+                
+                if (now < blockTime) {
+                    // Все еще заблокировано
+                    const remaining = blockTime - now;
+                    startCountdown(remaining);
+                    return true;
+                } else {
+                    // Блокировка истекла
+                    localStorage.removeItem('block_until');
+                    localStorage.setItem('login_attempts', '0');
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // Запуск обратного отсчета
+        function startCountdown(remainingTime) {
+            const blockedMessage = document.getElementById('blockedMessage');
+            const countdownTimer = document.getElementById('countdownTimer');
+            const passwordInput = document.getElementById('adminPassword');
+            const submitButton = document.querySelector('#passwordModal .cta-button');
+            
+            blockedMessage.style.display = 'block';
+            passwordInput.style.display = 'none';
+            submitButton.style.display = 'none';
+            
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            countdownInterval = setInterval(() => {
+                remainingTime -= 1000;
+                
+                if (remainingTime <= 0) {
+                    clearInterval(countdownInterval);
+                    blockedMessage.style.display = 'none';
+                    passwordInput.style.display = 'block';
+                    submitButton.style.display = 'block';
+                    localStorage.removeItem('block_until');
+                    localStorage.setItem('login_attempts', '0');
+                    showNotification('Доступ разблокирован', 'success');
+                    return;
+                }
+                
+                const minutes = Math.floor(remainingTime / 60000);
+                const seconds = Math.floor((remainingTime % 60000) / 1000);
+                countdownTimer.textContent = `До разблокировки: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+            
+            // Запустить сразу
+            const minutes = Math.floor(remainingTime / 60000);
+            const seconds = Math.floor((remainingTime % 60000) / 1000);
+            countdownTimer.textContent = `До разблокировки: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
         // Проверка пароля через хэш
         async function checkPassword() {
+            if (checkBlockStatus()) {
+                return;
+            }
+
             const passwordInput = document.getElementById('adminPassword').value;
             const inputHash = await sha256(passwordInput);
             
@@ -831,21 +903,27 @@
                 
                 // Сброс счетчика попыток
                 localStorage.setItem('login_attempts', '0');
+                localStorage.removeItem('block_until');
             } else {
                 showNotification('Неверный пароль', 'error');
                 document.getElementById('adminPassword').value = '';
                 
-                // Заблокировать после неудачных попыток
+                // Увеличить счетчик попыток
                 const attempts = parseInt(localStorage.getItem('login_attempts') || '0') + 1;
                 localStorage.setItem('login_attempts', attempts.toString());
                 
                 if (attempts >= 3) {
+                    // Установить блокировку
+                    const blockUntil = Date.now() + BLOCK_DURATION;
+                    localStorage.setItem('block_until', blockUntil.toString());
+                    
                     showNotification('Доступ заблокирован на 10 минут', 'error');
-                    setTimeout(() => {
-                        localStorage.setItem('login_attempts', '0');
-                        showNotification('Доступ разблокирован', 'success');
-                    }, 10 * 60 * 1000);
                     closePasswordModal();
+                    
+                    // Переоткрыть модальное окно с таймером
+                    setTimeout(() => {
+                        openPasswordModal();
+                    }, 100);
                 }
             }
         }
@@ -877,17 +955,40 @@
 
         // Модальные окна
         function openPasswordModal() {
-            const attempts = parseInt(localStorage.getItem('login_attempts') || '0');
-            if (attempts >= 3) {
-                showNotification('Доступ временно заблокирован. Попробуйте позже.', 'error');
+            if (checkBlockStatus()) {
+                // Показать модальное окно с таймером блокировки
+                document.getElementById('passwordModal').style.display = 'block';
+                const blockUntil = localStorage.getItem('block_until');
+                const remaining = parseInt(blockUntil) - Date.now();
+                startCountdown(remaining);
                 return;
             }
+
+            const attempts = parseInt(localStorage.getItem('login_attempts') || '0');
+            if (attempts >= 3) {
+                // Установить блокировку если ее нет
+                if (!localStorage.getItem('block_until')) {
+                    const blockUntil = Date.now() + BLOCK_DURATION;
+                    localStorage.setItem('block_until', blockUntil.toString());
+                }
+                checkBlockStatus();
+                return;
+            }
+
             document.getElementById('passwordModal').style.display = 'block';
+            // Сбросить отображение элементов
+            document.getElementById('adminPassword').style.display = 'block';
+            document.querySelector('#passwordModal .cta-button').style.display = 'block';
+            document.getElementById('blockedMessage').style.display = 'none';
         }
 
         function closePasswordModal() {
             document.getElementById('passwordModal').style.display = 'none';
             document.getElementById('adminPassword').value = '';
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
         }
 
         function openWebhookModal() {
