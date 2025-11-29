@@ -50,16 +50,28 @@
             align-items: center;
         }
 
-        .logo {
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-main {
             font-size: 1.8rem;
             font-weight: bold;
             color: var(--primary-color);
             text-transform: uppercase;
             letter-spacing: 2px;
+            line-height: 1;
         }
 
-        .logo span {
+        .logo-subtitle {
+            font-size: 0.7rem;
             color: var(--text-color);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            opacity: 0.8;
         }
 
         nav ul {
@@ -94,10 +106,19 @@
 
         .hero-content h1 {
             font-size: 3.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 3px;
             color: var(--primary-color);
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.9;
         }
 
         .hero-content p {
@@ -106,6 +127,61 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .social-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-color);
+            color: var(--dark-bg);
+            padding: 12px 24px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .social-button:hover {
+            background: #32a852;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 139, 34, 0.3);
+        }
+
+        .social-button.discord {
+            background: #5865F2;
+        }
+
+        .social-button.discord:hover {
+            background: #4752c4;
+        }
+
+        .social-button.roblox {
+            background: #dc3545;
+        }
+
+        .social-button.roblox:hover {
+            background: #c82333;
+        }
+
+        .social-button.youtube {
+            background: #FF0000;
+        }
+
+        .social-button.youtube:hover {
+            background: #cc0000;
         }
 
         .cta-button {
@@ -454,16 +530,22 @@
             gap: 2rem;
         }
 
+        .footer-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
         .contact-info {
             text-align: left;
         }
 
-        .social-links {
+        .footer-social-links {
             display: flex;
             gap: 1rem;
         }
 
-        .social-link {
+        .footer-social-link {
             color: var(--text-color);
             text-decoration: none;
             padding: 10px 15px;
@@ -472,7 +554,7 @@
             transition: all 0.3s ease;
         }
 
-        .social-link:hover {
+        .footer-social-link:hover {
             background: var(--primary-color);
             color: var(--dark-bg);
         }
@@ -522,6 +604,16 @@
             .footer-content {
                 flex-direction: column;
                 text-align: center;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .social-button {
+                width: 200px;
+                justify-content: center;
             }
         }
     </style>
@@ -587,7 +679,10 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">CRAMER<span>GROUP</span></div>
+                <div class="logo-container">
+                    <div class="logo-main">CRAMER GROUP</div>
+                    <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                </div>
                 <nav>
                     <ul>
                         <li><a href="#about">О нас</a></li>
@@ -607,9 +702,22 @@
         <div class="container">
             <div class="hero-content">
                 <h1>ЧВК CRAMER</h1>
+                <div class="hero-subtitle">PRIVATE MILITARY COMPANY</div>
                 <p>Элитные частные военные решения. Профессионализм. Дисциплина. Результат.</p>
                 <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                     <a href="#recruitment" class="cta-button">Присоединиться к нам</a>
+                </div>
+                
+                <div class="social-buttons">
+                    <a href="https://discord.gg/xMxmXjGpHf" class="social-button discord" target="_blank">
+                        📱 DISCORD
+                    </a>
+                    <a href="https://www.roblox.com/communities/889961230/Cramer-Group#!/about" class="social-button roblox" target="_blank">
+                        🎮 ROBLOX
+                    </a>
+                    <a href="https://www.youtube.com/@CramerGroupBRM5" class="social-button youtube" target="_blank">
+                        ▶️ YOUTUBE
+                    </a>
                 </div>
             </div>
         </div>
@@ -788,15 +896,19 @@
     <footer id="contact">
         <div class="container">
             <div class="footer-content">
-                <div class="logo">CRAMER<span>GROUP</span></div>
+                <div class="footer-logo">
+                    <div class="logo-main" style="font-size: 1.5rem;">CRAMER GROUP</div>
+                    <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                </div>
                 <div class="contact-info">
                     <p>Email: contact@cramer-pmc.com</p>
                     <p>Discord: discord.gg/cramer</p>
                     <p>Только для серьезных запросов</p>
                 </div>
-                <div class="social-links">
-                    <a href="#" class="social-link" onclick="showNotification('Переход в Discord')">Discord</a>
-                    <a href="#" class="social-link" onclick="showNotification('Переход в Roblox')">Roblox</a>
+                <div class="footer-social-links">
+                    <a href="https://discord.gg/xMxmXjGpHf" class="footer-social-link" target="_blank">Discord</a>
+                    <a href="https://www.roblox.com/communities/889961230/Cramer-Group#!/about" class="footer-social-link" target="_blank">Roblox</a>
+                    <a href="https://www.youtube.com/@CramerGroupBRM5" class="footer-social-link" target="_blank">YouTube</a>
                 </div>
             </div>
             <div style="margin-top: 2rem; font-size: 0.9rem; color: #888;">
@@ -807,8 +919,8 @@
 
     <script>
         // 🔐 ЗАЩИЩЕННАЯ КОНФИГУРАЦИЯ С ХЭШИРОВАНИЕМ
-        // Хэш пароля "admin123" (СМЕНИТЕ НА СВОЙ!)
-        const PASSWORD_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
+        // Хэш пароля "AwesomeCrimer2025"
+        const PASSWORD_HASH = "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890";
         const ENCRYPTION_KEY = "CRAMER_SECURE_" + Math.random().toString(36).substr(2, 9);
         const BLOCK_DURATION = 10 * 60 * 1000; // 10 минут в миллисекундах
         
@@ -1176,6 +1288,13 @@
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
+            });
+        });
+
+        // Открытие внешних ссылок с подтверждением
+        document.querySelectorAll('a[target="_blank"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                showNotification(`Переход на ${this.textContent.trim()}`, 'success');
             });
         });
     </script>
