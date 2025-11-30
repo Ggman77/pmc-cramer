@@ -5,13 +5,1220 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ЧВК CRAMER - Элитные частные военные решения</title>
     <style>
-        /* Весь ваш CSS код остается без изменений */
-        /* ... ваш существующий CSS ... */
+        /* RESET И БАЗОВЫЕ СТИЛИ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary-color: #228B22;
+            --secondary-color: #32a852;
+            --dark-bg: #0a0a0a;
+            --medium-bg: #1a1a1a;
+            --light-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --gold-color: #b8860b;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--medium-bg) 0%, var(--light-bg) 100%);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-image {
+            height: 50px;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-main {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .logo-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-color);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            opacity: 0.8;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            font-weight: 600;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin-top: 80px;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10,10,10,0.85);
+            z-index: -1;
+        }
+
+        .hero-content {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--primary-color);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .hero-content p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        /* КНОПКИ */
+        .social-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-color);
+            color: var(--dark-bg);
+            padding: 12px 24px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .social-button:hover {
+            background: #32a852;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 139, 34, 0.3);
+        }
+
+        .social-button.discord {
+            background: #5865F2;
+        }
+
+        .social-button.discord:hover {
+            background: #4752c4;
+        }
+
+        .social-button.roblox {
+            background: #dc3545;
+        }
+
+        .social-button.roblox:hover {
+            background: #c82333;
+        }
+
+        .social-button.youtube {
+            background: #FF0000;
+        }
+
+        .social-button.youtube:hover {
+            background: #cc0000;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--gold-color);
+            color: var(--dark-bg);
+            padding: 15px 35px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 3px;
+            font-size: 1rem;
+            margin: 0.5rem;
+        }
+
+        .cta-button:hover {
+            background: #daa520;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
+        }
+
+        .cta-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--medium-bg);
+            margin: 5% auto;
+            padding: 2.5rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .close {
+            color: var(--primary-color);
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: var(--secondary-color);
+        }
+
+        /* SECTIONS */
+        section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        /* ABOUT SECTION */
+        .about {
+            background: var(--medium-bg);
+        }
+
+        .about-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* UNITS SECTION */
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .unit-card {
+            background: var(--medium-bg);
+            padding: 2.5rem 2rem;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            height: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .unit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            z-index: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .unit-card.hammers::before {
+            background-image: url('images/unit-hammers.jpg');
+        }
+
+        .unit-card.shadows::before {
+            background-image: url('images/unit-shadows.jpg');
+        }
+
+        .unit-card.logistics::before {
+            background-image: url('images/unit-logistics.jpg');
+        }
+
+        .unit-card:hover::before {
+            opacity: 0.6;
+        }
+
+        .unit-card > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .unit-card:hover {
+            transform: translateY(-5px);
+            border-left-color: var(--secondary-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .unit-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .unit-card p {
+            line-height: 1.7;
+            color: var(--text-color);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* OPERATIONS SECTION */
+        .operations {
+            background: var(--medium-bg);
+        }
+
+        .operations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .operation-card {
+            background: var(--light-bg);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .operation-card.classified {
+            background: linear-gradient(135deg, var(--light-bg) 0%, var(--medium-bg) 100%);
+            border: 1px solid #555;
+        }
+
+        .operation-card.completed {
+            background: linear-gradient(135deg, var(--light-bg) 0%, #1a2a1a 100%);
+            border: 2px solid #32a852;
+            box-shadow: 0 0 20px rgba(50, 168, 82, 0.3);
+        }
+
+        .operation-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+        }
+
+        .operation-card.classified h3 {
+            color: #888;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .status.classified {
+            background: #555;
+            color: #ccc;
+        }
+
+        .status.completed {
+            background: #32a852;
+            color: #000;
+        }
+
+        .status.inactive {
+            background: #666;
+            color: #ccc;
+        }
+
+        .operation-info {
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        .operation-details {
+            background: var(--medium-bg);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            border-left: 3px solid var(--primary-color);
+            text-align: left;
+        }
+
+        .detail-item {
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #444;
+        }
+
+        .detail-label {
+            color: var(--primary-color);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .operation-result {
+            background: #1a2a1a;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 1.5rem;
+            border-left: 3px solid #32a852;
+            text-align: left;
+        }
+
+        .result-label {
+            color: #32a852;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .operation-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .classified-image {
+            width: 100%;
+            height: 150px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 2px dashed #555;
+        }
+
+        /* RECRUITMENT SECTION */
+        .recruitment-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--medium-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: var(--light-bg);
+            border: 1px solid #444;
+            color: var(--text-color);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(34, 139, 34, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--medium-bg);
+            padding: 3rem 0 2rem;
+            text-align: center;
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .contact-info {
+            text-align: left;
+            flex: 1;
+        }
+
+        .contact-info p {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-social-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-social-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid var(--primary-color);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-social-link:hover {
+            background: var(--primary-color);
+            color: var(--dark-bg);
+        }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--primary-color);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #32a852;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        /* LOADING SPINNER */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--gold-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* WEBHOOK SETUP */
+        .webhook-setup {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .webhook-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--dark-bg);
+            border: 1px solid var(--primary-color);
+            color: var(--text-color);
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        .access-denied {
+            text-align: center;
+            padding: 2rem;
+            background: var(--light-bg);
+            border-radius: 5px;
+            border: 2px solid #dc3545;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .logo-container {
+                justify-content: center;
+            }
+
+            .logo-text {
+                align-items: center;
+            }
+
+            nav ul {
+                gap: 1rem;
+                justify-content: center;
+            }
+
+            .hero {
+                margin-top: 120px;
+                height: auto;
+                min-height: 80vh;
+                padding: 2rem 0;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .social-button {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-logo {
+                align-items: center;
+            }
+
+            .contact-info {
+                text-align: center;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .units-grid,
+            .operations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 1.5rem;
+                width: 95%;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .unit-card,
+            .operation-card {
+                padding: 1.5rem;
+            }
+
+            .recruitment-form {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Весь ваш HTML код остается без изменений -->
-    <!-- ... ваш существующий HTML ... -->
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePasswordModal()">&times;</span>
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Доступ к настройкам</h3>
+            <div class="webhook-setup">
+                <p><strong>Требуется авторизация</strong></p>
+                <div class="form-group">
+                    <label for="adminPassword">Пароль доступа:</label>
+                    <input type="password" id="adminPassword" class="webhook-input" 
+                           placeholder="Введите пароль администратора" autocomplete="off"
+                           onkeypress="handlePasswordKeypress(event)">
+                </div>
+                <button class="cta-button" onclick="checkPassword()" style="width: 100%;">
+                    Войти
+                </button>
+                <div id="blockedMessage" style="display: none; margin-top: 1rem; padding: 1rem; background: #dc3545; border-radius: 3px; text-align: center;">
+                    <strong>Доступ заблокирован</strong>
+                    <div id="countdownTimer" style="margin-top: 0.5rem;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhook Setup Modal -->
+    <div id="webhookModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeWebhookModal()">&times;</span>
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Настройка Discord уведомлений</h3>
+            <div class="webhook-setup">
+                <p><strong>Инструкция:</strong></p>
+                <ol style="text-align: left; margin: 1rem 0; padding-left: 1.5rem;">
+                    <li>Зайдите в Discord сервер</li>
+                    <li>Настройки сервера → Интеграции → Webhooks</li>
+                    <li>Создайте новый вебхук</li>
+                    <li>Выберите канал для заявок</li>
+                    <li>Скопируйте URL ниже:</li>
+                </ol>
+                <input type="url" 
+                       id="discordWebhookUrl" 
+                       class="webhook-input" 
+                       placeholder="https://discord.com/api/webhooks/...">
+                <button class="cta-button" onclick="saveWebhook()" style="width: 100%;">
+                    Сохранить настройки
+                </button>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <button class="cta-button" onclick="testWebhook()" style="background: #32a852;">
+                        Тестировать вебхук
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <!-- Логотип слева -->
+                    <img src="images/logo.png" alt="CRAMER" class="logo-image">
+                    <!-- Текст CRAMER GROUP зеленым цветом -->
+                    <div class="logo-text">
+                        <div class="logo-main">CRAMER</div>
+                        <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#about">О нас</a></li>
+                        <li><a href="#units">Подразделения</a></li>
+                        <li><a href="#operations">Операции</a></li>
+                        <li><a href="#recruitment">Набор</a></li>
+                        <li><a href="#contact">Контакты</a></li>
+                        <li><a href="#" onclick="openPasswordModal(); return false;">⚙️ Настройки</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- Видео фон -->
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="images/background.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1>ЧВК CRAMER</h1>
+                <div class="hero-subtitle">PRIVATE MILITARY COMPANY</div>
+                <p>Элитные частные военные решения. Профессионализм. Дисциплина. Результат.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 2rem 0;">
+                    <a href="#recruitment" class="cta-button">Присоединиться к нам</a>
+                </div>
+                
+                <div class="social-buttons">
+                    <a href="https://discord.gg/xMxmXjGpHf" class="social-button discord" target="_blank">
+                        📱 DISCORD
+                    </a>
+                    <a href="https://www.roblox.com/communities/889961230/Cramer-Group#!/about" class="social-button roblox" target="_blank">
+                        🎮 ROBLOX
+                    </a>
+                    <a href="https://www.youtube.com/@CramerGroupBRM5" class="social-button youtube" target="_blank">
+                        ▶️ YOUTUBE
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Кто мы</h2>
+            <div class="about-content">
+                <p>ЧВК "CRAMER" - элитная частная военная компания под руководством Дэна Крамера. Мы специализируемся на выполнении задач повышенной сложности для государственных и частных заказчиков.</p>
+                <p>Наша философия: ценятся только достижения и профессионализм. В "Крамере" нет места бюрократии - только результат.</p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">150+</div>
+                        <div>Успешных операций</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div>Эффективность</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div>Готовность</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div>Проваленных контрактов</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Units Section -->
+    <section id="units">
+        <div class="container">
+            <h2 class="section-title">Наши подразделения</h2>
+            <div class="units-grid">
+                <div class="unit-card hammers">
+                    <h3>МОЛОТЫ</h3>
+                    <p>Штурмовое и антитеррористическое подразделение. Специализация: зачистка помещений, силовой захват объектов, нейтрализация противника в ближнем бою.</p>
+                </div>
+                <div class="unit-card shadows">
+                    <h3>ТЕНИ</h3>
+                    <p>Силы специальных операций. Специализация: разведка, диверсии, точечные ликвидации, операции в глубоком тылу противника.</p>
+                </div>
+                <div class="unit-card logistics">
+                    <h3>ЛОГИСТИКА</h3>
+                    <p>Подразделение обеспечения. Специализация: снабжение, транспорт, медицинская поддержка, техническое обслуживание.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Operations Section -->
+    <section id="operations" class="operations">
+        <div class="container">
+            <h2 class="section-title">Текущие операции</h2>
+            <p style="text-align: center; margin-bottom: 2rem; color: #888; font-style: italic;">
+                Доступ к операциям предоставляется оперативникам с соответствующим уровнем допуска
+            </p>
+            
+            <div class="operations-grid">
+                <!-- Completed Operation -->
+                <div class="operation-card completed">
+                    <img src="images/operation-ice.jpg" alt="Операция Ледяная Тишина" class="operation-image">
+                    <span class="status completed">Успешно завершена</span>
+                    <span class="status inactive" style="margin-left: 0.5rem;">Неактивна</span>
+                    <h3>ЛЕДЯНАЯ ТИШИНА</h3>
+                    <div class="operation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Тип:</span>
+                            <span>Спецоперация</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Приоритет:</span>
+                            <span>Высокий</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Статус:</span>
+                            <span>Завершена</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Награда:</span>
+                            <span>$50.000</span>
+                        </div>
+                    </div>
+                    <p class="operation-info">
+                        Захват и эвакуация высокопоставленного цели в арктических условиях. 
+                        Требовался опыт работы в экстремальных температурах.
+                    </p>
+                    <div class="operation-result">
+                        <div class="result-label">Результат операции:</div>
+                        <div>Цель успешно эвакуирована. Потерь среди оперативников нет. Задание выполнено за 72 часа.</div>
+                    </div>
+                </div>
+
+                <!-- Classified Operations -->
+                <div class="operation-card classified">
+                    <div class="classified-image">
+                        <span style="color: #666; font-size: 2rem;">🔒</span>
+                    </div>
+                    <span class="status classified">Засекречено</span>
+                    <h3>ОПЕРАЦИЯ #CR-782</h3>
+                    <p class="operation-info">
+                        █████████████████████████████
+                        █████████████████████████████
+                    </p>
+                    <button class="cta-button" onclick="showNotification('Требуется доступ 4-го уровня. Обратитесь к командиру.')" style="width: 100%; margin-top: 1rem;">
+                        Требуется доступ 4-го уровня
+                    </button>
+                </div>
+
+                <div class="operation-card classified">
+                    <div class="classified-image">
+                        <span style="color: #666; font-size: 2rem;">🔒</span>
+                    </div>
+                    <span class="status classified">Засекречено</span>
+                    <h3>ОПЕРАЦИЯ #CR-781</h3>
+                    <p class="operation-info">
+                        █████████████████████████████
+                        █████████████████████████████
+                    </p>
+                    <button class="cta-button" onclick="showNotification('Требуется доступ 4-го уровня. Обратитесь к командиру.')" style="width: 100%; margin-top: 1rem;">
+                        Требуется доступ 4-го уровня
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recruitment Section -->
+    <section id="recruitment">
+        <div class="container">
+            <h2 class="section-title">Присоединиться к CRAMER</h2>
+            <div class="recruitment-form">
+                <form id="recruitmentForm">
+                    <div class="form-group">
+                        <label for="name">Полное имя *</label>
+                        <input type="text" id="name" name="name" required maxlength="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="callsign">Ваш позывной *</label>
+                        <input type="text" id="callsign" name="callsign" required 
+                               placeholder="Например: Ястреб, Ворон, Тень..."
+                               maxlength="20">
+                        <small style="color: #888; font-size: 0.8rem; margin-top: 5px; display: block;">
+                            Будет использоваться для идентификации в операциях
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Возраст *</label>
+                        <input type="number" id="age" name="age" required min="14" max="60">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required maxlength="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="robloxNick">Ник в Roblox *</label>
+                        <input type="text" id="robloxNick" name="robloxNick" required maxlength="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="discordNick">Ник в Discord *</label>
+                        <input type="text" id="discordNick" name="discordNick" required placeholder="username#1234" maxlength="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="unit">Предпочтительное подразделение *</label>
+                        <select id="unit" name="unit" required>
+                            <option value="">Выберите подразделение</option>
+                            <option value="hammers">Молоты (Штурм)</option>
+                            <option value="shadows">Тени (Спецназ)</option>
+                            <option value="logistics">Логистика (Обеспечение)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="motivation">Мотивация (Почему вы хотите именно к нам?) *</label>
+                        <textarea id="motivation" name="motivation" rows="6" required 
+                                  placeholder="Развернутый ответ о вашей мотивации присоединиться к ЧВК CRAMER..." 
+                                  maxlength="2000"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="cta-button" id="recruitmentSubmitBtn" style="width: 100%;">
+                        Отправить заявку
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <!-- Убрали логотип, оставили только текст -->
+                    <div class="logo-text">
+                        <div class="logo-main" style="font-size: 1.5rem;">CRAMER GROUP</div>
+                        <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <p>Email: cramergrouppmc@gmail.com</p>
+                    <p>Discord: discord.gg/xMxmXjGpHf</p>
+                    <p>Только для серьезных запросов</p>
+                </div>
+                <div class="footer-social-links">
+                    <a href="https://discord.gg/xMxmXjGpHf" class="footer-social-link" target="_blank">Discord</a>
+                    <a href="https://www.roblox.com/communities/889961230/Cramer-Group#!/about" class="footer-social-link" target="_blank">Roblox</a>
+                    <a href="https://www.youtube.com/@CramerGroupBRM5" class="footer-social-link" target="_blank">YouTube</a>
+                </div>
+            </div>
+            <div style="margin-top: 2rem; font-size: 0.9rem; color: #888;">
+                <p>© 2025 ЧВК CRAMER. Все права защищены. Конфиденциально.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
         // 🔐 БЕЗОПАСНАЯ КОНФИГУРАЦИЯ
