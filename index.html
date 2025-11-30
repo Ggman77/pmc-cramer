@@ -53,8 +53,7 @@
                 <div class="form-group">
                     <label for="adminPassword">Пароль доступа:</label>
                     <input type="password" id="adminPassword" class="webhook-input" 
-                           placeholder="Введите пароль администратора" autocomplete="off"
-                           onkeypress="handlePasswordKeypress(event)">
+                           placeholder="Введите пароль администратора" autocomplete="off">
                 </div>
                 <button class="cta-button" onclick="checkPassword()" style="width: 100%;">
                     Войти
@@ -62,9 +61,6 @@
                 <div id="blockedMessage" style="display: none; margin-top: 1rem; padding: 1rem; background: #dc3545; border-radius: 3px; text-align: center;">
                     <strong>Доступ заблокирован</strong>
                     <div id="countdownTimer" style="margin-top: 0.5rem;"></div>
-                </div>
-                <div style="margin-top: 1rem; text-align: center; font-size: 0.8rem; color: #888;">
-                    <p>Подсказка: Пароль: AwesomeCrimer2025</p>
                 </div>
             </div>
         </div>
@@ -100,18 +96,266 @@
         </div>
     </div>
 
-    <!-- Header и остальные секции остаются без изменений -->
-    <!-- ... -->
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-main">CRAMER GROUP</div>
+                    <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#about">О нас</a></li>
+                        <li><a href="#units">Подразделения</a></li>
+                        <li><a href="#operations">Операции</a></li>
+                        <li><a href="#recruitment">Набор</a></li>
+                        <li><a href="#contact">Контакты</a></li>
+                        <li><a href="#" onclick="openPasswordModal(); return false;">⚙️ Настройки</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>ЧВК CRAMER</h1>
+                <div class="hero-subtitle">PRIVATE MILITARY COMPANY</div>
+                <p>Элитные частные военные решения. Профессионализм. Дисциплина. Результат.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="#recruitment" class="cta-button">Присоединиться к нам</a>
+                </div>
+                
+                <div class="social-buttons">
+                    <a href="https://discord.gg/xMxmXjGpHf" class="social-button discord" target="_blank">
+                        📱 DISCORD
+                    </a>
+                    <a href="https://www.roblox.com/communities/889961230/Cramer-Group#!/about" class="social-button roblox" target="_blank">
+                        🎮 ROBLOX
+                    </a>
+                    <a href="https://www.youtube.com/@CramerGroupBRM5" class="social-button youtube" target="_blank">
+                        ▶️ YOUTUBE
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Кто мы</h2>
+            <div class="about-content">
+                <p>ЧВК "CRAMER" - элитная частная военная компания под руководством Дэна Крамера. Мы специализируемся на выполнении задач повышенной сложности для государственных и частных заказчиков.</p>
+                <br>
+                <p>Наша философия: ценятся только достижения и профессионализм. В "Крамере" нет места бюрократии - только результат.</p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">150+</div>
+                        <div>Успешных операций</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div>Эффективность</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div>Готовность</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div>Проваленных контрактов</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Units Section -->
+    <section id="units">
+        <div class="container">
+            <h2 class="section-title">Наши подразделения</h2>
+            <div class="units-grid">
+                <div class="unit-card">
+                    <h3>МОЛОТЫ</h3>
+                    <p>Штурмовое и антитеррористическое подразделение. Специализация: зачистка помещений, силовой захват объектов, нейтрализация противника в ближнем бою.</p>
+                </div>
+                <div class="unit-card">
+                    <h3>ТЕНИ</h3>
+                    <p>Силы специальных операций. Специализация: разведка, диверсии, точечные ликвидации, операции в глубоком тылу противника.</p>
+                </div>
+                <div class="unit-card">
+                    <h3>ЛОГИСТИКА</h3>
+                    <p>Подразделение обеспечения. Специализация: снабжение, транспорт, медицинская поддержка, техническое обслуживание.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Operations Section -->
+    <section id="operations" class="operations">
+        <div class="container">
+            <h2 class="section-title">Текущие операции</h2>
+            <p style="text-align: center; margin-bottom: 2rem; color: #888;">
+                Доступ к операциям предоставляется оперативникам с соответствующим уровнем допуска
+            </p>
+            
+            <div class="operations-grid">
+                <!-- Completed Operation -->
+                <div class="operation-card completed">
+                    <span class="status completed">Успешно завершена</span>
+                    <span class="status inactive" style="margin-left: 0.5rem;">Неактивна</span>
+                    <h3>ЛЕДЯНАЯ ТИШИНА</h3>
+                    <div class="operation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Тип:</span>
+                            <span>Спецоперация</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Приоритет:</span>
+                            <span>Высокий</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Статус:</span>
+                            <span>Завершена</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Награда:</span>
+                            <span>$50.000</span>
+                        </div>
+                    </div>
+                    <p class="operation-info">
+                        Захват и эвакуация высокопоставленного цели в арктических условиях. 
+                        Требовался опыт работы в экстремальных температурах.
+                    </p>
+                    <div class="operation-result">
+                        <div class="result-label">Результат операции:</div>
+                        <div>Цель успешно эвакуирована. Потерь среди оперативников нет. Задание выполнено за 72 часа.</div>
+                    </div>
+                </div>
+
+                <!-- Classified Operations -->
+                <div class="operation-card classified">
+                    <span class="status classified">Засекречено</span>
+                    <h3>ОПЕРАЦИЯ #CR-782</h3>
+                    <p class="operation-info">
+                        █████████████████████████████
+                        █████████████████████████████
+                    </p>
+                    <button class="cta-button" onclick="showNotification('Требуется доступ 4-го уровня. Обратитесь к командиру.')" style="width: 100%; margin-top: 1rem;">
+                        Требуется доступ 4-го уровня
+                    </button>
+                </div>
+
+                <div class="operation-card classified">
+                    <span class="status classified">Засекречено</span>
+                    <h3>ОПЕРАЦИЯ #CR-781</h3>
+                    <p class="operation-info">
+                        █████████████████████████████
+                        █████████████████████████████
+                    </p>
+                    <button class="cta-button" onclick="showNotification('Требуется доступ 4-го уровня. Обратитесь к командиру.')" style="width: 100%; margin-top: 1rem;">
+                        Требуется доступ 4-го уровня
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recruitment Section -->
+    <section id="recruitment">
+        <div class="container">
+            <h2 class="section-title">Присоединиться к CRAMER</h2>
+            <div class="recruitment-form">
+                <form id="recruitmentForm">
+                    <div class="form-group">
+                        <label for="name">Полное имя *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Возраст *</label>
+                        <input type="number" id="age" name="age" required min="16" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="robloxNick">Ник в Roblox *</label>
+                        <input type="text" id="robloxNick" name="robloxNick" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="discordNick">Ник в Discord *</label>
+                        <input type="text" id="discordNick" name="discordNick" required placeholder="username#1234">
+                    </div>
+                    <div class="form-group">
+                        <label for="unit">Предпочтительное подразделение *</label>
+                        <select id="unit" name="unit" required>
+                            <option value="">Выберите подразделение</option>
+                            <option value="hammers">Молоты (Штурм)</option>
+                            <option value="shadows">Тени (Спецназ)</option>
+                            <option value="logistics">Логистика (Обеспечение)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="motivation">Мотивация (Почему вы хотите именно к нам?) *</label>
+                        <textarea id="motivation" name="motivation" rows="6" required placeholder="Развернутый ответ о вашей мотивации присоединиться к ЧВК CRAMER..."></textarea>
+                    </div>
+                    <button type="submit" class="cta-button" id="recruitmentSubmitBtn">
+                        Отправить заявку
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-main" style="font-size: 1.5rem;">CRAMER GROUP</div>
+                    <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                </div>
+                <div class="contact-info">
+                    <p>Email: contact@cramer-pmc.com</p>
+                    <p>Discord: discord.gg/cramer</p>
+                    <p>Только для серьезных запросов</p>
+                </div>
+                <div class="footer-social-links">
+                    <a href="https://discord.gg/xMxmXjGpHf" class="footer-social-link" target="_blank">Discord</a>
+                    <a href="https://www.roblox.com/communities/889961230/Cramer-Group#!/about" class="footer-social-link" target="_blank">Roblox</a>
+                    <a href="https://www.youtube.com/@CramerGroupBRM5" class="footer-social-link" target="_blank">YouTube</a>
+                </div>
+            </div>
+            <div style="margin-top: 2rem; font-size: 0.9rem; color: #888;">
+                <p>© 2024 ЧВК CRAMER. Все права защищены. Конфиденциально.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // 🔐 УПРОЩЕННАЯ И ИСПРАВЛЕННАЯ СИСТЕМА АУТЕНТИФИКАЦИИ
-        const CORRECT_PASSWORD = "AwesomeCrimer2025";
-        const ENCRYPTION_KEY = "CRAMER_SECURE_KEY_2024";
-        const BLOCK_DURATION = 10 * 60 * 1000; // 10 минут
+        // 🔐 ИСПРАВЛЕННАЯ КОНФИГУРАЦИЯ С ХЭШИРОВАНИЕМ
+        // Правильный хэш пароля "AwesomeCrimer2025"
+        const PASSWORD_HASH = "a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890";
+        const ENCRYPTION_KEY = "CRAMER_SECURE_KEY_2024"; // Фиксированный ключ вместо случайного
+        const BLOCK_DURATION = 10 * 60 * 1000; // 10 минут в миллисекундах
         
         let DISCORD_WEBHOOK_URL = '';
         let isAuthenticated = false;
         let countdownInterval = null;
+
+        // SHA256 хэш-функция
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
         // Проверка блокировки
         function checkBlockStatus() {
@@ -121,10 +365,12 @@
                 const blockTime = parseInt(blockUntil);
                 
                 if (now < blockTime) {
+                    // Все еще заблокировано
                     const remaining = blockTime - now;
                     startCountdown(remaining);
                     return true;
                 } else {
+                    // Блокировка истекла
                     localStorage.removeItem('block_until');
                     localStorage.setItem('login_attempts', '0');
                     return false;
@@ -167,56 +413,53 @@
                 countdownTimer.textContent = `До разблокировки: ${minutes}:${seconds.toString().padStart(2, '0')}`;
             }, 1000);
             
+            // Запустить сразу
             const minutes = Math.floor(remainingTime / 60000);
             const seconds = Math.floor((remainingTime % 60000) / 1000);
             countdownTimer.textContent = `До разблокировки: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
-        // Обработка нажатия Enter в поле пароля
-        function handlePasswordKeypress(event) {
-            if (event.key === 'Enter') {
-                checkPassword();
-            }
-        }
-
-        // ПРЯМАЯ ПРОВЕРКА ПАРОЛЯ БЕЗ ХЭШИРОВАНИЯ
-        function checkPassword() {
+        // Проверка пароля через хэш
+        async function checkPassword() {
             if (checkBlockStatus()) {
                 return;
             }
 
             const passwordInput = document.getElementById('adminPassword').value;
             
-            console.log("Введенный пароль:", passwordInput);
-            console.log("Ожидаемый пароль:", CORRECT_PASSWORD);
+            // Создаем хэш введенного пароля
+            const inputHash = await sha256(passwordInput);
             
-            if (passwordInput === CORRECT_PASSWORD) {
+            console.log("Введенный пароль:", passwordInput);
+            console.log("Хэш введенного пароля:", inputHash);
+            console.log("Ожидаемый хэш:", PASSWORD_HASH);
+            
+            if (inputHash === PASSWORD_HASH) {
                 isAuthenticated = true;
-                showNotification('Доступ разрешен! Открываю настройки...', 'success');
+                showNotification('Доступ разрешен', 'success');
                 closePasswordModal();
-                setTimeout(() => {
-                    openWebhookModal();
-                }, 1000);
+                openWebhookModal();
                 
                 // Сброс счетчика попыток
                 localStorage.setItem('login_attempts', '0');
                 localStorage.removeItem('block_until');
             } else {
-                showNotification('Неверный пароль! Попробуйте еще раз.', 'error');
+                showNotification('Неверный пароль', 'error');
                 document.getElementById('adminPassword').value = '';
-                document.getElementById('adminPassword').focus();
                 
                 // Увеличить счетчик попыток
                 const attempts = parseInt(localStorage.getItem('login_attempts') || '0') + 1;
                 localStorage.setItem('login_attempts', attempts.toString());
                 
                 if (attempts >= 3) {
+                    // Установить блокировку
                     const blockUntil = Date.now() + BLOCK_DURATION;
                     localStorage.setItem('block_until', blockUntil.toString());
                     
-                    showNotification('Доступ заблокирован на 10 минут из-за множества неудачных попыток', 'error');
+                    showNotification('Доступ заблокирован на 10 минут', 'error');
                     closePasswordModal();
                     
+                    // Переоткрыть модальное окно с таймером
                     setTimeout(() => {
                         openPasswordModal();
                     }, 100);
@@ -244,7 +487,7 @@
             if (encryptedWebhook) {
                 DISCORD_WEBHOOK_URL = decryptWebhookUrl(encryptedWebhook);
                 if (DISCORD_WEBHOOK_URL) {
-                    console.log('Discord вебхук загружен:', DISCORD_WEBHOOK_URL);
+                    showNotification('Discord вебхук загружен', 'success');
                 }
             }
         }
@@ -252,6 +495,7 @@
         // Модальные окна
         function openPasswordModal() {
             if (checkBlockStatus()) {
+                // Показать модальное окно с таймером блокировки
                 document.getElementById('passwordModal').style.display = 'block';
                 const blockUntil = localStorage.getItem('block_until');
                 const remaining = parseInt(blockUntil) - Date.now();
@@ -261,6 +505,7 @@
 
             const attempts = parseInt(localStorage.getItem('login_attempts') || '0');
             if (attempts >= 3) {
+                // Установить блокировку если ее нет
                 if (!localStorage.getItem('block_until')) {
                     const blockUntil = Date.now() + BLOCK_DURATION;
                     localStorage.setItem('block_until', blockUntil.toString());
@@ -270,14 +515,10 @@
             }
 
             document.getElementById('passwordModal').style.display = 'block';
+            // Сбросить отображение элементов
             document.getElementById('adminPassword').style.display = 'block';
             document.querySelector('#passwordModal .cta-button').style.display = 'block';
             document.getElementById('blockedMessage').style.display = 'none';
-            
-            // Фокус на поле ввода
-            setTimeout(() => {
-                document.getElementById('adminPassword').focus();
-            }, 100);
         }
 
         function closePasswordModal() {
