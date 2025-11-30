@@ -783,7 +783,6 @@
     </style>
 </head>
 <body>
-    <!-- Остальная HTML структура остается БЕЗ ИЗМЕНЕНИЙ -->
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
@@ -1020,22 +1019,37 @@
                         <label for="name">Полное имя *</label>
                         <input type="text" id="name" name="name" required>
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="callsign">Ваш позывной *</label>
+                        <input type="text" id="callsign" name="callsign" required 
+                               placeholder="Например: Ястреб, Ворон, Тень..."
+                               maxlength="20">
+                        <small style="color: #888; font-size: 0.8rem; margin-top: 5px; display: block;">
+                            Будет использоваться для идентификации в операциях
+                        </small>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="age">Возраст *</label>
                         <input type="number" id="age" name="age" required min="16" max="60">
                     </div>
+                    
                     <div class="form-group">
                         <label for="email">Email *</label>
                         <input type="email" id="email" name="email" required>
                     </div>
+                    
                     <div class="form-group">
                         <label for="robloxNick">Ник в Roblox *</label>
                         <input type="text" id="robloxNick" name="robloxNick" required>
                     </div>
+                    
                     <div class="form-group">
                         <label for="discordNick">Ник в Discord *</label>
                         <input type="text" id="discordNick" name="discordNick" required placeholder="username#1234">
                     </div>
+                    
                     <div class="form-group">
                         <label for="unit">Предпочтительное подразделение *</label>
                         <select id="unit" name="unit" required>
@@ -1045,10 +1059,12 @@
                             <option value="logistics">Логистика (Обеспечение)</option>
                         </select>
                     </div>
+                    
                     <div class="form-group">
                         <label for="motivation">Мотивация (Почему вы хотите именно к нам?) *</label>
                         <textarea id="motivation" name="motivation" rows="6" required placeholder="Развернутый ответ о вашей мотивации присоединиться к ЧВК CRAMER..."></textarea>
                     </div>
+                    
                     <button type="submit" class="cta-button" id="recruitmentSubmitBtn" style="width: 100%;">
                         Отправить заявку
                     </button>
@@ -1083,7 +1099,6 @@
     </footer>
 
     <script>
-        // JavaScript код остается БЕЗ ИЗМЕНЕНИЙ из предыдущего исправленного варианта
         // 🔐 УПРОЩЕННАЯ И ИСПРАВЛЕННАЯ СИСТЕМА АУТЕНТИФИКАЦИИ
         const CORRECT_PASSWORD = "AwesomeCrimer2025";
         const ENCRYPTION_KEY = "CRAMER_SECURE_KEY_2024";
@@ -1350,12 +1365,13 @@
                 title: "🎯 НОВАЯ ЗАЯВКА В CRAMER",
                 color: 0x228B22,
                 fields: [
-                    { name: "👤 Имя", value: formData.name, inline: true },
+                    { name: "👤 Полное имя", value: formData.name, inline: true },
+                    { name: "🎖️ Позывной", value: formData.callsign, inline: true },
                     { name: "🔞 Возраст", value: formData.age.toString(), inline: true },
                     { name: "📧 Email", value: formData.email, inline: true },
                     { name: "🎮 Roblox ник", value: formData.robloxNick, inline: true },
                     { name: "💬 Discord ник", value: formData.discordNick, inline: true },
-                    { name: "🎖️ Подразделение", value: getUnitText(formData.unit), inline: true },
+                    { name: "⚔️ Подразделение", value: getUnitText(formData.unit), inline: true },
                     { name: "📝 Мотивация", value: formData.motivation || "Не указано" },
                     { name: "🕒 Время отправки", value: new Date().toLocaleString('ru-RU'), inline: true },
                     { name: "🌐 Источник", value: window.location.href, inline: true }
@@ -1399,6 +1415,7 @@
 
             const formData = {
                 name: document.getElementById('name').value,
+                callsign: document.getElementById('callsign').value,
                 age: document.getElementById('age').value,
                 email: document.getElementById('email').value,
                 robloxNick: document.getElementById('robloxNick').value,
