@@ -246,7 +246,7 @@
 
         .slider-label {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             margin-bottom: 5px;
         }
 
@@ -318,7 +318,7 @@
         /* Hero Section */
         .hero {
             background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.8)), 
-                        url('https://i.imgur.com/jj91sk5.gif') center/cover;
+                        url('https://images.unsplash.com/photo-1551524164-6ca88f2930e0?ixlib=rb-4.0.3') center/cover;
             height: 100vh;
             display: flex;
             align-items: center;
@@ -493,6 +493,75 @@
             transform: translateY(-5px);
         }
 
+        /* Recruitment Section */
+        .recruitment {
+            background: var(--medium-bg);
+        }
+
+        .recruitment-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--dark-bg);
+            border: 1px solid #444;
+            color: var(--text-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-submit:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .form-submit:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* Gallery Section */
         .gallery {
             background: var(--medium-bg);
@@ -621,6 +690,25 @@
             background: #dc3545;
         }
 
+        /* Sections Manager */
+        .sections-manager {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            color: white;
+        }
+
+        .sections-manager.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -647,6 +735,11 @@
                 right: 5%;
                 min-width: auto;
             }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -666,11 +759,30 @@
         </div>
     </div>
 
+    <!-- Sections Manager -->
+    <div class="sections-manager" id="sectionsManager">
+        <div class="editor-panel" style="max-width: 600px;">
+            <h3>📋 Управление секциями</h3>
+            <div style="margin: 1.5rem 0; max-height: 400px; overflow-y: auto;">
+                <div id="sectionsList">
+                    <!-- Sections will be listed here -->
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
+                <button onclick="addNewSection('text')" class="toolbar-btn" style="flex: 1;">➕ Текст</button>
+                <button onclick="addNewSection('cards')" class="toolbar-btn" style="flex: 1;">🎴 Карточки</button>
+                <button onclick="addNewSection('gallery')" class="toolbar-btn" style="flex: 1;">🖼️ Галерея</button>
+            </div>
+            <button onclick="toggleSectionsManager()" class="toolbar-btn" style="width: 100%;">Закрыть</button>
+        </div>
+    </div>
+
     <!-- Editor Toolbar -->
     <div class="editor-toolbar" id="editorToolbar">
         <button class="toolbar-btn save" onclick="saveChanges()">💾 Сохранить</button>
         <button class="toolbar-btn undo" onclick="undoChange()">↶ Отменить</button>
         <button class="toolbar-btn" onclick="toggleEditMode()" id="editModeBtn">✏️ Режим редактирования</button>
+        <button class="toolbar-btn" onclick="toggleSectionsManager()">📋 Управление секциями</button>
         <div class="color-picker">
             <div class="color-option active" style="background: #228B22;" onclick="changeColorScheme('#228B22')"></div>
             <div class="color-option" style="background: #b8860b;" onclick="changeColorScheme('#b8860b')"></div>
@@ -738,6 +850,9 @@
         </div>
     </div>
 
+    <!-- Add Section Button -->
+    <div class="add-section-btn" id="addSectionBtn" onclick="toggleSectionsManager()" title="Добавить секцию">+</div>
+
     <!-- Header -->
     <header>
         <div class="container">
@@ -750,6 +865,7 @@
                     <ul>
                         <li><a href="#about" data-editable="true" data-content="nav-about">О нас</a></li>
                         <li><a href="#units" data-editable="true" data-content="nav-units">Подразделения</a></li>
+                        <li><a href="#recruitment" data-editable="true" data-content="nav-recruitment">Набор</a></li>
                         <li><a href="#gallery" data-editable="true" data-content="nav-gallery">Галерея</a></li>
                         <li><a href="#contact" data-editable="true" data-content="nav-contact">Контакты</a></li>
                     </ul>
@@ -760,6 +876,11 @@
 
     <!-- Hero Section -->
     <section class="hero" data-bg-editable="true" id="hero-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('hero-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('hero-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('hero-section')">×</div>
+        </div>
         <div class="container">
             <div class="hero-content">
                 <h1 data-editable="true" data-content="hero-title">ЧВК CRAMER</h1>
@@ -786,6 +907,11 @@
 
     <!-- About Section -->
     <section id="about" class="about" data-draggable="true" id="about-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('about-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('about-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('about-section')">×</div>
+        </div>
         <div class="container">
             <h2 class="section-title" data-editable="true" data-content="about-title">Кто мы</h2>
             <div class="about-content">
@@ -817,6 +943,11 @@
 
     <!-- Units Section -->
     <section id="units" data-draggable="true" id="units-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('units-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('units-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('units-section')">×</div>
+        </div>
         <div class="container">
             <h2 class="section-title" data-editable="true" data-content="units-title">Наши подразделения</h2>
             <div class="units-grid">
@@ -836,8 +967,66 @@
         </div>
     </section>
 
+    <!-- Recruitment Section -->
+    <section id="recruitment" class="recruitment" data-draggable="true" id="recruitment-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('recruitment-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('recruitment-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('recruitment-section')">×</div>
+        </div>
+        <div class="container">
+            <h2 class="section-title" data-editable="true" data-content="recruitment-title">Присоединиться к ЧВК CRAMER</h2>
+            <div class="recruitment-form">
+                <form id="recruitmentForm">
+                    <div class="form-group">
+                        <label class="form-label" for="applicantName">Полное имя *</label>
+                        <input type="text" id="applicantName" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="applicantAge">Возраст *</label>
+                        <input type="number" id="applicantAge" class="form-input" min="16" max="60" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="applicantDiscord">Discord (username#0000) *</label>
+                        <input type="text" id="applicantDiscord" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="applicantExperience">Опыт в подобных проектах</label>
+                        <textarea id="applicantExperience" class="form-textarea" placeholder="Опишите ваш опыт участия в военных/ролевых проектах..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="applicantUnit">Предпочтительное подразделение *</label>
+                        <select id="applicantUnit" class="form-select" required>
+                            <option value="">Выберите подразделение</option>
+                            <option value="МОЛОТЫ">МОЛОТЫ (штурмовое подразделение)</option>
+                            <option value="ТЕНИ">ТЕНИ (спецоперации)</option>
+                            <option value="ЛОГИСТИКА">ЛОГИСТИКА (снабжение и поддержка)</option>
+                            <option value="Не определился">Пока не определился</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="applicantMotivation">Почему вы хотите присоединиться к ЧВК CRAMER? *</label>
+                        <textarea id="applicantMotivation" class="form-textarea" required placeholder="Расскажите о вашей мотивации..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="form-submit" id="submitBtn">Отправить заявку</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
     <!-- Gallery Section -->
     <section id="gallery" class="gallery" data-draggable="true" id="gallery-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('gallery-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('gallery-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('gallery-section')">×</div>
+        </div>
         <div class="container">
             <h2 class="section-title" data-editable="true" data-content="gallery-title">Галерея</h2>
             <div class="gallery-grid">
@@ -851,6 +1040,11 @@
 
     <!-- Footer -->
     <footer id="contact" data-draggable="true" id="footer-section">
+        <div class="section-controls">
+            <div class="section-btn" onclick="moveSectionUp('footer-section')">↑</div>
+            <div class="section-btn" onclick="moveSectionDown('footer-section')">↓</div>
+            <div class="section-btn delete" onclick="removeSection('footer-section')">×</div>
+        </div>
         <div class="container">
             <div class="footer-content">
                 <div class="logo-container">
@@ -868,6 +1062,9 @@
     <script>
         // 🔐 АДМИН СИСТЕМА
         const ADMIN_PASSWORD = "AwesomeCrimer2025";
+        // 🔗 Discord Webhook URL - ЗАМЕНИТЕ НА СВОЙ ВЕБХУК
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/ВАШ_WEBHOOK_URL";
+        
         let isEditMode = false;
         let currentElement = null;
         let changeHistory = [];
@@ -908,9 +1105,9 @@
                     console.log('Данные сайта загружены');
                 } catch (e) {
                     console.error('Ошибка загрузки данных:', e);
+                    setDefaultImages();
                 }
             } else {
-                // Устанавливаем изображения по умолчанию при первом запуске
                 setDefaultImages();
             }
         }
@@ -929,7 +1126,6 @@
                 const element = document.querySelector(`[data-content="${key}"]`);
                 if (element) {
                     element.style.backgroundImage = `url('${url}')`;
-                    // Сохраняем масштаб по умолчанию
                     element.setAttribute('data-image-scale', '100');
                     updateBackgroundSize(element);
                 }
@@ -943,10 +1139,10 @@
                 elements.forEach(element => {
                     if (element.hasAttribute('data-bg-editable')) {
                         // Для фоновых изображений
-                        if (value.url) {
+                        if (value && value.url) {
                             element.style.backgroundImage = `url('${value.url}')`;
                         }
-                        if (value.scale) {
+                        if (value && value.scale) {
                             element.setAttribute('data-image-scale', value.scale);
                             updateBackgroundSize(element);
                         }
@@ -992,7 +1188,7 @@
                     // Для фоновых изображений сохраняем URL и масштаб
                     const bgImage = element.style.backgroundImage;
                     const url = bgImage && bgImage !== 'none' ? 
-                        bgImage.replace('url("', '').replace('")', '') : '';
+                        bgImage.replace('url("', '').replace('")', '').replace("url('", "").replace("')", "") : '';
                     const scale = element.getAttribute('data-image-scale') || '100';
                     
                     siteData[key] = {
@@ -1121,11 +1317,9 @@
             const viewportHeight = window.innerHeight;
             
             if (elementRect.bottom > viewportHeight - 400) {
-                // Если элемент внизу страницы - показываем инспектор сверху
                 inspector.style.top = '80px';
                 inspector.style.bottom = 'auto';
             } else {
-                // Иначе показываем рядом с элементом
                 inspector.style.top = (elementRect.top + 80) + 'px';
                 inspector.style.bottom = 'auto';
             }
@@ -1135,15 +1329,14 @@
                 textInput.style.display = 'none';
                 textInput.value = '';
                 
-                // Получаем URL изображения
                 const bgImage = element.style.backgroundImage;
                 if (bgImage && bgImage !== 'none') {
-                    bgImageInput.value = bgImage.replace('url("', '').replace('")', '');
+                    const cleanUrl = bgImage.replace('url("', '').replace('")', '').replace("url('", "").replace("')", "");
+                    bgImageInput.value = cleanUrl;
                 } else {
                     bgImageInput.value = '';
                 }
                 
-                // Устанавливаем масштаб
                 const scale = element.getAttribute('data-image-scale') || '100';
                 scaleSlider.value = scale;
                 scaleValue.textContent = scale + '%';
@@ -1154,19 +1347,10 @@
                 bgImageInput.value = '';
             }
             
-            // Получаем стили элемента
             const styles = getComputedStyle(element);
-            
-            // Цвет текста
             colorInput.value = rgbToHex(styles.color);
-            
-            // Цвет фона
             bgColorInput.value = rgbToHex(styles.backgroundColor);
-            
-            // Размер шрифта
             fontSizeInput.value = styles.fontSize;
-            
-            // Насыщенность шрифта
             fontWeightInput.value = styles.fontWeight;
 
             inspector.classList.add('active');
@@ -1189,21 +1373,17 @@
             const fontWeightInput = document.getElementById('editFontWeight');
             const scaleSlider = document.getElementById('editImageScale');
 
-            // Применяем изменения только если элемент не является фоном
             if (!currentElement.hasAttribute('data-bg-editable')) {
                 currentElement.textContent = textInput.value;
             }
             
-            // Применяем стили
             if (colorInput.value) currentElement.style.color = colorInput.value;
             if (bgColorInput.value) currentElement.style.backgroundColor = bgColorInput.value;
             
-            // Для фоновых изображений
             if (currentElement.hasAttribute('data-bg-editable')) {
                 if (bgImageInput.value) {
                     currentElement.style.backgroundImage = `url('${bgImageInput.value}')`;
                 }
-                // Применяем масштаб
                 const scale = scaleSlider.value;
                 currentElement.setAttribute('data-image-scale', scale);
                 updateBackgroundSize(currentElement);
@@ -1288,9 +1468,261 @@
             }
         }
 
+        // Управление секциями
+        function toggleSectionsManager() {
+            const manager = document.getElementById('sectionsManager');
+            if (manager.classList.contains('active')) {
+                manager.classList.remove('active');
+            } else {
+                manager.classList.add('active');
+                updateSectionsList();
+            }
+        }
+
+        function updateSectionsList() {
+            const sectionsList = document.getElementById('sectionsList');
+            sectionsList.innerHTML = '';
+            
+            const sections = document.querySelectorAll('section, footer');
+            sections.forEach((section, index) => {
+                const sectionItem = document.createElement('div');
+                sectionItem.style.cssText = 'padding: 10px; margin-bottom: 10px; background: var(--light-bg); border-radius: 5px; display: flex; justify-content: space-between; align-items: center;';
+                
+                const title = section.querySelector('h2, h1') ? section.querySelector('h2, h1').textContent : 'Секция ' + (index + 1);
+                
+                sectionItem.innerHTML = `
+                    <div>${title}</div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="section-btn" onclick="moveSectionUp('${section.id}')">↑</button>
+                        <button class="section-btn" onclick="moveSectionDown('${section.id}')">↓</button>
+                        <button class="section-btn delete" onclick="removeSection('${section.id}')">×</button>
+                    </div>
+                `;
+                
+                sectionsList.appendChild(sectionItem);
+            });
+        }
+
+        function moveSectionUp(sectionId) {
+            const section = document.getElementById(sectionId);
+            const prevSection = section.previousElementSibling;
+            
+            if (prevSection && prevSection.tagName !== 'HEADER') {
+                section.parentNode.insertBefore(section, prevSection);
+                updateSectionsList();
+                showNotification('Секция перемещена вверх', 'success');
+            }
+        }
+
+        function moveSectionDown(sectionId) {
+            const section = document.getElementById(sectionId);
+            const nextSection = section.nextElementSibling;
+            
+            if (nextSection) {
+                section.parentNode.insertBefore(nextSection, section);
+                updateSectionsList();
+                showNotification('Секция перемещена вниз', 'success');
+            }
+        }
+
+        function removeSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section && section.id !== 'footer-section' && confirm('Удалить эту секцию?')) {
+                section.remove();
+                updateSectionsList();
+                showNotification('Секция удалена', 'success');
+            }
+        }
+
+        function addNewSection(type) {
+            const sectionId = 'section-' + Date.now();
+            let sectionHTML = '';
+
+            switch(type) {
+                case 'text':
+                    sectionHTML = `
+                        <section id="${sectionId}" data-draggable="true">
+                            <div class="section-controls">
+                                <div class="section-btn" onclick="moveSectionUp('${sectionId}')">↑</div>
+                                <div class="section-btn" onclick="moveSectionDown('${sectionId}')">↓</div>
+                                <div class="section-btn delete" onclick="removeSection('${sectionId}')">×</div>
+                            </div>
+                            <div class="container">
+                                <h2 class="section-title" data-editable="true" data-content="section-${sectionId}-title">Новая текстовая секция</h2>
+                                <div class="about-content">
+                                    <p data-editable="true" data-content="section-${sectionId}-text">Текст новой секции. Вы можете отредактировать этот текст.</p>
+                                </div>
+                            </div>
+                        </section>
+                    `;
+                    break;
+                case 'cards':
+                    sectionHTML = `
+                        <section id="${sectionId}" data-draggable="true">
+                            <div class="section-controls">
+                                <div class="section-btn" onclick="moveSectionUp('${sectionId}')">↑</div>
+                                <div class="section-btn" onclick="moveSectionDown('${sectionId}')">↓</div>
+                                <div class="section-btn delete" onclick="removeSection('${sectionId}')">×</div>
+                            </div>
+                            <div class="container">
+                                <h2 class="section-title" data-editable="true" data-content="section-${sectionId}-title">Новая секция с карточками</h2>
+                                <div class="units-grid">
+                                    <div class="unit-card" data-draggable="true">
+                                        <h3 data-editable="true" data-content="section-${sectionId}-card1-title">Карточка 1</h3>
+                                        <p data-editable="true" data-content="section-${sectionId}-card1-text">Текст карточки 1</p>
+                                    </div>
+                                    <div class="unit-card" data-draggable="true">
+                                        <h3 data-editable="true" data-content="section-${sectionId}-card2-title">Карточка 2</h3>
+                                        <p data-editable="true" data-content="section-${sectionId}-card2-text">Текст карточки 2</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    `;
+                    break;
+                case 'gallery':
+                    sectionHTML = `
+                        <section id="${sectionId}" data-draggable="true">
+                            <div class="section-controls">
+                                <div class="section-btn" onclick="moveSectionUp('${sectionId}')">↑</div>
+                                <div class="section-btn" onclick="moveSectionDown('${sectionId}')">↓</div>
+                                <div class="section-btn delete" onclick="removeSection('${sectionId}')">×</div>
+                            </div>
+                            <div class="container">
+                                <h2 class="section-title" data-editable="true" data-content="section-${sectionId}-title">Новая галерея</h2>
+                                <div class="gallery-grid">
+                                    <div class="gallery-item" data-bg-editable="true" data-content="section-${sectionId}-img1" data-image-scale="100"></div>
+                                    <div class="gallery-item" data-bg-editable="true" data-content="section-${sectionId}-img2" data-image-scale="100"></div>
+                                    <div class="gallery-item" data-bg-editable="true" data-content="section-${sectionId}-img3" data-image-scale="100"></div>
+                                </div>
+                            </div>
+                        </section>
+                    `;
+                    break;
+            }
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = sectionHTML;
+            const newSection = tempDiv.firstElementChild;
+
+            const footer = document.querySelector('footer');
+            footer.parentNode.insertBefore(newSection, footer);
+            
+            updateSectionsList();
+            showNotification('Новая секция добавлена', 'success');
+        }
+
+        // Обработка формы набора
+        document.getElementById('recruitmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            
+            // Получаем данные формы
+            const formData = {
+                name: document.getElementById('applicantName').value,
+                age: document.getElementById('applicantAge').value,
+                discord: document.getElementById('applicantDiscord').value,
+                experience: document.getElementById('applicantExperience').value,
+                unit: document.getElementById('applicantUnit').value,
+                motivation: document.getElementById('applicantMotivation').value,
+                timestamp: new Date().toLocaleString('ru-RU')
+            };
+
+            // Блокируем кнопку
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+
+            // Отправляем в Discord
+            sendToDiscord(formData)
+                .then(() => {
+                    showNotification('Заявка успешно отправлена!', 'success');
+                    document.getElementById('recruitmentForm').reset();
+                })
+                .catch(error => {
+                    console.error('Ошибка отправки:', error);
+                    showNotification('Ошибка отправки заявки. Попробуйте позже.', 'error');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                });
+        });
+
+        // Отправка в Discord
+        async function sendToDiscord(formData) {
+            if (DISCORD_WEBHOOK_URL.includes('ВАШ_WEBHOOK_URL')) {
+                showNotification('Вебхук не настроен. Заявка сохранена локально.', 'info');
+                // Сохраняем заявку локально
+                const applications = JSON.parse(localStorage.getItem('cramer_applications') || '[]');
+                applications.push({...formData, id: Date.now()});
+                localStorage.setItem('cramer_applications', JSON.stringify(applications));
+                return;
+            }
+
+            const embed = {
+                title: "📋 Новая заявка в ЧВК CRAMER",
+                color: 0x228B22,
+                fields: [
+                    {
+                        name: "👤 Имя",
+                        value: formData.name,
+                        inline: true
+                    },
+                    {
+                        name: "🎂 Возраст",
+                        value: formData.age,
+                        inline: true
+                    },
+                    {
+                        name: "💬 Discord",
+                        value: formData.discord,
+                        inline: true
+                    },
+                    {
+                        name: "🎯 Подразделение",
+                        value: formData.unit,
+                        inline: true
+                    },
+                    {
+                        name: "📊 Опыт",
+                        value: formData.experience || "Не указан",
+                        inline: false
+                    },
+                    {
+                        name: "💪 Мотивация",
+                        value: formData.motivation,
+                        inline: false
+                    },
+                    {
+                        name: "🕐 Время подачи",
+                        value: formData.timestamp,
+                        inline: true
+                    }
+                ],
+                footer: {
+                    text: "ЧВК CRAMER - Система набора"
+                }
+            };
+
+            const response = await fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    embeds: [embed]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка сети');
+            }
+        }
+
         // Система уведомлений
         function showNotification(message, type = 'info') {
-            // Создаем уведомление
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
@@ -1326,6 +1758,9 @@
             if (e.key === 'Escape') {
                 if (document.getElementById('adminEditor').classList.contains('active')) {
                     document.getElementById('adminEditor').classList.remove('active');
+                }
+                if (document.getElementById('sectionsManager').classList.contains('active')) {
+                    document.getElementById('sectionsManager').classList.remove('active');
                 }
                 if (document.getElementById('elementInspector').classList.contains('active')) {
                     document.getElementById('elementInspector').classList.remove('active');
