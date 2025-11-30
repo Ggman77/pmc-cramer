@@ -117,15 +117,34 @@
 
         /* HERO SECTION */
         .hero {
-            background: linear-gradient(rgba(10,10,10,0.85), rgba(10,10,10,0.85)), 
-                        url('images/background.mp4') center/cover;
+            position: relative;
             height: 100vh;
             min-height: 600px;
             display: flex;
             align-items: center;
             text-align: center;
             margin-top: 80px;
-            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10,10,10,0.85);
+            z-index: -1;
         }
 
         .hero-content {
@@ -133,6 +152,8 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-content h1 {
@@ -378,6 +399,10 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .unit-card::before {
@@ -391,6 +416,7 @@
             background-position: center;
             opacity: 0.4;
             z-index: 1;
+            transition: opacity 0.3s ease;
         }
 
         .unit-card.hammers::before {
@@ -403,6 +429,10 @@
 
         .unit-card.logistics::before {
             background-image: url('images/unit-logistics.jpg');
+        }
+
+        .unit-card:hover::before {
+            opacity: 0.6;
         }
 
         .unit-card > * {
@@ -422,11 +452,13 @@
             font-size: 1.5rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
         .unit-card p {
             line-height: 1.7;
             color: var(--text-color);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
         /* OPERATIONS SECTION */
@@ -914,9 +946,9 @@
                 <div class="logo-container">
                     <!-- Логотип слева -->
                     <img src="images/logo.png" alt="CRAMER GROUP" class="logo-image">
-                    <!-- Текст CRAMER зеленым цветом -->
+                    <!-- Текст CRAMER GROUP зеленым цветом -->
                     <div class="logo-text">
-                        <div class="logo-main">CRAMER</div>
+                        <div class="logo-main">CRAMER GROUP</div>
                         <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
                     </div>
                 </div>
@@ -936,9 +968,14 @@
 
     <!-- Hero Section -->
     <section class="hero">
+        <!-- Видео фон -->
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="images/background.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+        <div class="hero-overlay"></div>
         <div class="container">
             <div class="hero-content">
-                <!-- Убрали логотип из героя -->
                 <h1>ЧВК CRAMER</h1>
                 <div class="hero-subtitle">PRIVATE MILITARY COMPANY</div>
                 <p>Элитные частные военные решения. Профессионализм. Дисциплина. Результат.</p>
@@ -1158,8 +1195,11 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="images/logo.png" alt="CRAMER GROUP" style="height: 40px; margin-bottom: 10px;">
-                    <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                    <!-- Убрали логотип, оставили только текст -->
+                    <div class="logo-text">
+                        <div class="logo-main" style="font-size: 1.5rem;">CRAMER GROUP</div>
+                        <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
+                    </div>
                 </div>
                 <div class="contact-info">
                     <p>Email: contact@cramer-pmc.com</p>
@@ -1516,7 +1556,7 @@
 
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
-        }
+        });
 
         // Уведомления
         function showNotification(message, type = 'info') {
