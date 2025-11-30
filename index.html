@@ -1214,451 +1214,509 @@
     </footer>
 
     <script>
-        // 🔐 БЕЗОПАСНАЯ КОНФИГУРАЦИЯ
-        const CORRECT_PASSWORD = "AwesomeCrimer2025";
-        const ENCRYPTION_KEY = "CRAMER_SECURE_KEY_2024";
-        const BLOCK_DURATION = 10 * 60 * 1000;
-        
-        // 🔒 ЗАЩИЩЕННЫЙ ВЕБХУК - используем обфускацию
-        const WEBHOOK_DATA = {
-            part1: "https://discord.com/api/webhooks/",
-            part2: "1315819903318757497/",
-            part3: "Kf6L9sR4pX2vQ8wE1yT5uJ0mH3nB7cA"
-        };
-        
-        let DISCORD_WEBHOOK_URL = '';
-        let isAuthenticated = false;
-        let countdownInterval = null;
+        <script>
+    // 🔐 БЕЗОПАСНАЯ КОНФИГУРАЦИЯ
+    const CORRECT_PASSWORD = "AwesomeCrimer2025";
+    const ENCRYPTION_KEY = "CRAMER_SECURE_KEY_2024";
+    const BLOCK_DURATION = 10 * 60 * 1000;
+    
+    // 🔒 АКТИВНЫЕ ВЕБХУКИ (несколько вариантов на выбор)
+    const WEBHOOKS = {
+        primary: "https://discord.com/api/webhooks/1444336755212812319/Uk13V6c3OOfOaZNTwG-QtaKN3dqW6_V_ZDa41Bq0-m2IK5nypz6j7WjzmBxluthbvnxG",
+        backup: "https://discord.com/api/webhooks/1315820000000000000/BackupWebhookTokenHere"
+    };
+    
+    let DISCORD_WEBHOOK_URL = '';
+    let isAuthenticated = false;
+    let countdownInterval = null;
 
-        // Функция для безопасной сборки вебхука
-        function getWebhookUrl() {
-            // Собираем URL из частей для затруднения автоматического сканирования
-            return WEBHOOK_DATA.part1 + WEBHOOK_DATA.part2 + WEBHOOK_DATA.part3;
-        }
-
-        // Проверка блокировки
-        function checkBlockStatus() {
-            const blockUntil = localStorage.getItem('block_until');
-            if (blockUntil) {
-                const now = Date.now();
-                const blockTime = parseInt(blockUntil);
-                
-                if (now < blockTime) {
-                    const remaining = blockTime - now;
-                    startCountdown(remaining);
-                    return true;
-                } else {
-                    localStorage.removeItem('block_until');
-                    localStorage.setItem('login_attempts', '0');
-                    return false;
+    // Функция для получения рабочего вебхука
+    function getActiveWebhook() {
+        // Сначала пробуем пользовательский вебхук из localStorage
+        const encryptedWebhook = localStorage.getItem('cramer_encrypted_webhook');
+        if (encryptedWebhook) {
+            try {
+                const decrypted = decryptWebhookUrl(encryptedWebhook);
+                if (decrypted && decrypted.includes('discord.com/api/webhooks/')) {
+                    return decrypted;
                 }
+            } catch (e) {
+                console.error('Error decrypting webhook:', e);
             }
-            return false;
         }
+        
+        // Используем основной вебхук
+        return WEBHOOKS.primary;
+    }
 
-        // Запуск обратного отсчета
-        function startCountdown(remainingTime) {
-            const blockedMessage = document.getElementById('blockedMessage');
-            const countdownTimer = document.getElementById('countdownTimer');
-            const passwordInput = document.getElementById('adminPassword');
-            const submitButton = document.querySelector('#passwordModal .cta-button');
+    // Проверка блокировки
+    function checkBlockStatus() {
+        const blockUntil = localStorage.getItem('block_until');
+        if (blockUntil) {
+            const now = Date.now();
+            const blockTime = parseInt(blockUntil);
             
-            blockedMessage.style.display = 'block';
-            passwordInput.style.display = 'none';
-            submitButton.style.display = 'none';
+            if (now < blockTime) {
+                const remaining = blockTime - now;
+                startCountdown(remaining);
+                return true;
+            } else {
+                localStorage.removeItem('block_until');
+                localStorage.setItem('login_attempts', '0');
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // Запуск обратного отсчета
+    function startCountdown(remainingTime) {
+        const blockedMessage = document.getElementById('blockedMessage');
+        const countdownTimer = document.getElementById('countdownTimer');
+        const passwordInput = document.getElementById('adminPassword');
+        const submitButton = document.querySelector('#passwordModal .cta-button');
+        
+        blockedMessage.style.display = 'block';
+        passwordInput.style.display = 'none';
+        submitButton.style.display = 'none';
+        
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+        
+        countdownInterval = setInterval(() => {
+            remainingTime -= 1000;
             
-            if (countdownInterval) {
+            if (remainingTime <= 0) {
                 clearInterval(countdownInterval);
+                blockedMessage.style.display = 'none';
+                passwordInput.style.display = 'block';
+                submitButton.style.display = 'block';
+                localStorage.removeItem('block_until');
+                localStorage.setItem('login_attempts', '0');
+                showNotification('Доступ разблокирован', 'success');
+                return;
             }
-            
-            countdownInterval = setInterval(() => {
-                remainingTime -= 1000;
-                
-                if (remainingTime <= 0) {
-                    clearInterval(countdownInterval);
-                    blockedMessage.style.display = 'none';
-                    passwordInput.style.display = 'block';
-                    submitButton.style.display = 'block';
-                    localStorage.removeItem('block_until');
-                    localStorage.setItem('login_attempts', '0');
-                    showNotification('Доступ разблокирован', 'success');
-                    return;
-                }
-                
-                const minutes = Math.floor(remainingTime / 60000);
-                const seconds = Math.floor((remainingTime % 60000) / 1000);
-                countdownTimer.textContent = `До разблокировки: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
             
             const minutes = Math.floor(remainingTime / 60000);
             const seconds = Math.floor((remainingTime % 60000) / 1000);
             countdownTimer.textContent = `До разблокировки: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+        
+        const minutes = Math.floor(remainingTime / 60000);
+        const seconds = Math.floor((remainingTime % 60000) / 1000);
+        countdownTimer.textContent = `До разблокировки: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Обработка нажатия Enter
+    function handlePasswordKeypress(event) {
+        if (event.key === 'Enter') {
+            checkPassword();
+        }
+    }
+
+    // Проверка пароля
+    function checkPassword() {
+        if (checkBlockStatus()) {
+            return;
         }
 
-        // Обработка нажатия Enter
-        function handlePasswordKeypress(event) {
-            if (event.key === 'Enter') {
-                checkPassword();
-            }
-        }
-
-        // Проверка пароля
-        function checkPassword() {
-            if (checkBlockStatus()) {
-                return;
-            }
-
-            const passwordInput = document.getElementById('adminPassword').value;
-            
-            if (passwordInput === CORRECT_PASSWORD) {
-                isAuthenticated = true;
-                showNotification('Доступ разрешен! Открываю настройки...', 'success');
-                closePasswordModal();
-                setTimeout(() => {
-                    openWebhookModal();
-                }, 1000);
-                
-                localStorage.setItem('login_attempts', '0');
-                localStorage.removeItem('block_until');
-            } else {
-                showNotification('Неверный пароль! Попробуйте еще раз.', 'error');
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('adminPassword').focus();
-                
-                const attempts = parseInt(localStorage.getItem('login_attempts') || '0') + 1;
-                localStorage.setItem('login_attempts', attempts.toString());
-                
-                if (attempts >= 3) {
-                    const blockUntil = Date.now() + BLOCK_DURATION;
-                    localStorage.setItem('block_until', blockUntil.toString());
-                    
-                    showNotification('Доступ заблокирован на 10 минут из-за множества неудачных попыток', 'error');
-                    closePasswordModal();
-                    
-                    setTimeout(() => {
-                        openPasswordModal();
-                    }, 100);
-                }
-            }
-        }
-
-        // Шифрование вебхука
-        function encryptWebhookUrl(url) {
-            return btoa(url + ENCRYPTION_KEY);
-        }
-
-        function decryptWebhookUrl(encrypted) {
-            try {
-                const decrypted = atob(encrypted);
-                return decrypted.replace(ENCRYPTION_KEY, '');
-            } catch {
-                return '';
-            }
-        }
-
-        // Инициализация
-        function initializeWebhook() {
-            // Сначала пытаемся загрузить из localStorage
-            const encryptedWebhook = localStorage.getItem('cramer_encrypted_webhook');
-            if (encryptedWebhook) {
-                DISCORD_WEBHOOK_URL = decryptWebhookUrl(encryptedWebhook);
-            }
-            
-            // Если в localStorage нет, используем встроенный вебхук
-            if (!DISCORD_WEBHOOK_URL) {
-                DISCORD_WEBHOOK_URL = getWebhookUrl();
-            }
-            
-            if (DISCORD_WEBHOOK_URL) {
-                console.log('Discord вебхук инициализирован');
-            }
-        }
-
-        // Модальные окна
-        function openPasswordModal() {
-            if (checkBlockStatus()) {
-                document.getElementById('passwordModal').style.display = 'block';
-                const blockUntil = localStorage.getItem('block_until');
-                const remaining = parseInt(blockUntil) - Date.now();
-                startCountdown(remaining);
-                return;
-            }
-
-            const attempts = parseInt(localStorage.getItem('login_attempts') || '0');
-            if (attempts >= 3) {
-                if (!localStorage.getItem('block_until')) {
-                    const blockUntil = Date.now() + BLOCK_DURATION;
-                    localStorage.setItem('block_until', blockUntil.toString());
-                }
-                checkBlockStatus();
-                return;
-            }
-
-            document.getElementById('passwordModal').style.display = 'block';
-            document.getElementById('adminPassword').style.display = 'block';
-            document.querySelector('#passwordModal .cta-button').style.display = 'block';
-            document.getElementById('blockedMessage').style.display = 'none';
-            
+        const passwordInput = document.getElementById('adminPassword').value;
+        
+        if (passwordInput === CORRECT_PASSWORD) {
+            isAuthenticated = true;
+            showNotification('Доступ разрешен! Открываю настройки...', 'success');
+            closePasswordModal();
             setTimeout(() => {
-                document.getElementById('adminPassword').focus();
-            }, 100);
-        }
-
-        function closePasswordModal() {
-            document.getElementById('passwordModal').style.display = 'none';
+                openWebhookModal();
+            }, 1000);
+            
+            localStorage.setItem('login_attempts', '0');
+            localStorage.removeItem('block_until');
+        } else {
+            showNotification('Неверный пароль! Попробуйте еще раз.', 'error');
             document.getElementById('adminPassword').value = '';
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-            }
-        }
-
-        function openWebhookModal() {
-            if (!isAuthenticated) {
-                openPasswordModal();
-                return;
-            }
-            document.getElementById('webhookModal').style.display = 'block';
-            document.getElementById('discordWebhookUrl').value = DISCORD_WEBHOOK_URL;
-        }
-
-        function closeWebhookModal() {
-            document.getElementById('webhookModal').style.display = 'none';
-            isAuthenticated = false;
-        }
-
-        function saveWebhook() {
-            if (!isAuthenticated) {
-                showNotification('Требуется авторизация', 'error');
-                return;
-            }
-
-            const webhookUrl = document.getElementById('discordWebhookUrl').value;
-            if (webhookUrl && webhookUrl.includes('discord.com/api/webhooks/')) {
-                DISCORD_WEBHOOK_URL = webhookUrl;
-                const encrypted = encryptWebhookUrl(webhookUrl);
-                localStorage.setItem('cramer_encrypted_webhook', encrypted);
-                showNotification('Discord вебхук сохранен и зашифрован!', 'success');
+            document.getElementById('adminPassword').focus();
+            
+            const attempts = parseInt(localStorage.getItem('login_attempts') || '0') + 1;
+            localStorage.setItem('login_attempts', attempts.toString());
+            
+            if (attempts >= 3) {
+                const blockUntil = Date.now() + BLOCK_DURATION;
+                localStorage.setItem('block_until', blockUntil.toString());
                 
-                testWebhook();
+                showNotification('Доступ заблокирован на 10 минут из-за множества неудачных попыток', 'error');
+                closePasswordModal();
                 
-            } else {
-                showNotification('Введите корректный URL Discord вебхука', 'error');
+                setTimeout(() => {
+                    openPasswordModal();
+                }, 100);
             }
         }
+    }
 
-        // Тестирование вебхука с обработкой ошибок
-        async function testWebhook() {
-            if (!DISCORD_WEBHOOK_URL) {
-                showNotification('Вебхук не настроен', 'error');
-                return;
-            }
+    // Шифрование вебхука
+    function encryptWebhookUrl(url) {
+        return btoa(url + ENCRYPTION_KEY);
+    }
 
-            const testEmbed = {
-                title: "🧪 ТЕСТОВОЕ УВЕДОМЛЕНИЕ",
-                color: 0xb8860b,
-                description: "Вебхук успешно настроен! Заявки будут приходить в этот канал.",
-                fields: [
-                    { name: "Статус", value: "✅ Работает", inline: true },
-                    { name: "Время", value: new Date().toLocaleString('ru-RU'), inline: true },
-                    { name: "Система", value: "ЧВК CRAMER", inline: true }
-                ],
-                timestamp: new Date().toISOString()
-            };
+    function decryptWebhookUrl(encrypted) {
+        try {
+            const decrypted = atob(encrypted);
+            return decrypted.replace(ENCRYPTION_KEY, '');
+        } catch {
+            return '';
+        }
+    }
 
-            try {
-                const response = await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'User-Agent': 'Cramer-PMC-Website/1.0'
-                    },
-                    body: JSON.stringify({ 
-                        embeds: [testEmbed],
-                        username: 'CRAMER Recruitment',
-                        avatar_url: 'https://your-domain.com/images/logo.png'
-                    })
-                });
+    // Инициализация
+    function initializeWebhook() {
+        DISCORD_WEBHOOK_URL = getActiveWebhook();
+        console.log('Webhook initialized:', DISCORD_WEBHOOK_URL ? '✅' : '❌');
+    }
 
-                if (response.ok) {
-                    showNotification('Вебхук работает корректно!', 'success');
-                } else {
-                    const errorText = await response.text();
-                    console.error('Webhook error:', errorText);
-                    showNotification('Ошибка вебхука. Проверьте URL и права доступа.', 'error');
-                }
-            } catch (error) {
-                console.error('Webhook connection error:', error);
-                showNotification('Ошибка подключения к Discord. Проверьте интернет-соединение.', 'error');
-            }
+    // Модальные окна
+    function openPasswordModal() {
+        if (checkBlockStatus()) {
+            document.getElementById('passwordModal').style.display = 'block';
+            const blockUntil = localStorage.getItem('block_until');
+            const remaining = parseInt(blockUntil) - Date.now();
+            startCountdown(remaining);
+            return;
         }
 
-        // Отправка заявок в Discord с улучшенной обработкой ошибок
-        async function sendToDiscord(formData, type) {
-            if (!DISCORD_WEBHOOK_URL) {
-                showNotification('Система уведомлений не настроена', 'error');
-                return false;
+        const attempts = parseInt(localStorage.getItem('login_attempts') || '0');
+        if (attempts >= 3) {
+            if (!localStorage.getItem('block_until')) {
+                const blockUntil = Date.now() + BLOCK_DURATION;
+                localStorage.setItem('block_until', blockUntil.toString());
             }
+            checkBlockStatus();
+            return;
+        }
 
-            // Валидация данных
-            if (!formData.name || !formData.callsign || !formData.discordNick) {
-                showNotification('Пожалуйста, заполните все обязательные поля', 'error');
-                return false;
-            }
+        document.getElementById('passwordModal').style.display = 'block';
+        document.getElementById('adminPassword').style.display = 'block';
+        document.querySelector('#passwordModal .cta-button').style.display = 'block';
+        document.getElementById('blockedMessage').style.display = 'none';
+        
+        setTimeout(() => {
+            document.getElementById('adminPassword').focus();
+        }, 100);
+    }
 
-            const embed = {
-                title: "🎯 НОВАЯ ЗАЯВКА В CRAMER",
-                color: 0x228B22,
-                fields: [
-                    { name: "👤 Полное имя", value: formData.name.substring(0, 256) || "Не указано", inline: true },
-                    { name: "🎖️ Позывной", value: formData.callsign.substring(0, 256) || "Не указано", inline: true },
-                    { name: "🔞 Возраст", value: formData.age?.toString().substring(0, 3) || "Не указано", inline: true },
-                    { name: "📧 Email", value: formData.email.substring(0, 256) || "Не указано", inline: true },
-                    { name: "🎮 Roblox ник", value: formData.robloxNick.substring(0, 256) || "Не указано", inline: true },
-                    { name: "💬 Discord ник", value: formData.discordNick.substring(0, 256) || "Не указано", inline: true },
-                    { name: "⚔️ Подразделение", value: getUnitText(formData.unit) || "Не указано", inline: true },
-                    { name: "📝 Мотивация", value: (formData.motivation || "Не указано").substring(0, 1024) },
-                    { name: "🕒 Время отправки", value: new Date().toLocaleString('ru-RU'), inline: true },
-                    { name: "🌐 IP адрес", value: "Защищено", inline: true }
-                ],
-                timestamp: new Date().toISOString(),
-                footer: { 
-                    text: "ЧВК CRAMER - Защищенная система обработки заявок",
-                    icon_url: "https://your-domain.com/images/logo.png"
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+    }
+
+    function openWebhookModal() {
+        if (!isAuthenticated) {
+            openPasswordModal();
+            return;
+        }
+        document.getElementById('webhookModal').style.display = 'block';
+        document.getElementById('discordWebhookUrl').value = DISCORD_WEBHOOK_URL;
+    }
+
+    function closeWebhookModal() {
+        document.getElementById('webhookModal').style.display = 'none';
+        isAuthenticated = false;
+    }
+
+    function saveWebhook() {
+        if (!isAuthenticated) {
+            showNotification('Требуется авторизация', 'error');
+            return;
+        }
+
+        const webhookUrl = document.getElementById('discordWebhookUrl').value;
+        if (webhookUrl && webhookUrl.includes('discord.com/api/webhooks/')) {
+            DISCORD_WEBHOOK_URL = webhookUrl;
+            const encrypted = encryptWebhookUrl(webhookUrl);
+            localStorage.setItem('cramer_encrypted_webhook', encrypted);
+            showNotification('Discord вебхук сохранен и зашифрован!', 'success');
+            
+            testWebhook();
+            
+        } else {
+            showNotification('Введите корректный URL Discord вебхука', 'error');
+        }
+    }
+
+    // Тестирование вебхука с улучшенной обработкой ошибок
+    async function testWebhook() {
+        if (!DISCORD_WEBHOOK_URL) {
+            showNotification('Вебхук не настроен', 'error');
+            return;
+        }
+
+        const testEmbed = {
+            title: "🧪 ТЕСТОВОЕ УВЕДОМЛЕНИЕ",
+            color: 0xb8860b,
+            description: "Вебхук успешно настроен! Заявки будут приходить в этот канал.",
+            fields: [
+                { name: "Статус", value: "✅ Работает", inline: true },
+                { name: "Время", value: new Date().toLocaleString('ru-RU'), inline: true },
+                { name: "Система", value: "ЧВК CRAMER", inline: true }
+            ],
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            const response = await fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Cramer-PMC-Website/1.0'
                 },
-                thumbnail: {
-                    url: "https://your-domain.com/images/logo.png"
-                }
-            };
+                body: JSON.stringify({ 
+                    embeds: [testEmbed],
+                    username: 'CRAMER Recruitment',
+                    avatar_url: 'https://example.com/logo.png'
+                })
+            });
 
-            try {
-                const response = await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'User-Agent': 'Cramer-PMC-Recruitment/1.0'
-                    },
-                    body: JSON.stringify({ 
-                        embeds: [embed],
-                        username: 'CRAMER Recruitment Bot',
-                        avatar_url: 'https://your-domain.com/images/logo.png'
-                    })
-                });
+            if (response.ok) {
+                showNotification('Вебхук работает корректно!', 'success');
+            } else {
+                console.error('Webhook error status:', response.status);
+                showNotification('Ошибка вебхука. Проверьте URL и права доступа.', 'error');
+            }
+        } catch (error) {
+            console.error('Webhook connection error:', error);
+            showNotification('Ошибка подключения к Discord.', 'error');
+        }
+    }
 
-                if (response.ok) {
-                    return true;
-                } else {
-                    console.error('Discord API error:', await response.text());
-                    return false;
+    // УЛУЧШЕННАЯ ОТПРАВКА ЗАЯВОК С РЕЗЕРВНЫМИ ВАРИАНТАМИ
+    async function sendToDiscord(formData) {
+        const webhookUrl = getActiveWebhook();
+        
+        if (!webhookUrl) {
+            console.error('No webhook configured');
+            return false;
+        }
+
+        // Валидация данных
+        if (!validateFormData(formData)) {
+            return false;
+        }
+
+        const embed = createApplicationEmbed(formData);
+
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Cramer-PMC-Recruitment/1.0'
+                },
+                body: JSON.stringify({ 
+                    embeds: [embed],
+                    username: 'CRAMER Recruitment Bot',
+                    avatar_url: 'https://example.com/logo.png'
+                })
+            });
+
+            if (response.ok) {
+                console.log('Application sent successfully');
+                return true;
+            } else {
+                console.error('Discord API error:', response.status, await response.text());
+                
+                // Пробуем резервный вебхук
+                if (webhookUrl !== WEBHOOKS.backup) {
+                    console.log('Trying backup webhook...');
+                    return await sendToBackupWebhook(formData);
                 }
-            } catch (error) {
-                console.error('Network error:', error);
+                
                 return false;
             }
+        } catch (error) {
+            console.error('Network error:', error);
+            
+            // Пробуем резервный вебхук при сетевой ошибке
+            if (webhookUrl !== WEBHOOKS.backup) {
+                console.log('Trying backup webhook after network error...');
+                return await sendToBackupWebhook(formData);
+            }
+            
+            return false;
+        }
+    }
+
+    // Резервный вебхук
+    async function sendToBackupWebhook(formData) {
+        if (!WEBHOOKS.backup || !WEBHOOKS.backup.includes('discord.com/api/webhooks/')) {
+            return false;
         }
 
-        // Вспомогательные функции
-        function getUnitText(unit) {
-            const units = {
-                'hammers': 'Молоты (Штурм)',
-                'shadows': 'Тени (Спецназ)',
-                'logistics': 'Логистика (Обеспечение)'
-            };
-            return units[unit] || unit;
+        const embed = createApplicationEmbed(formData);
+
+        try {
+            const response = await fetch(WEBHOOKS.backup, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Cramer-PMC-Recruitment/1.0'
+                },
+                body: JSON.stringify({ 
+                    embeds: [embed],
+                    username: 'CRAMER Recruitment Bot',
+                    avatar_url: 'https://example.com/logo.png'
+                })
+            });
+
+            return response.ok;
+        } catch (error) {
+            console.error('Backup webhook also failed:', error);
+            return false;
+        }
+    }
+
+    // Валидация данных формы
+    function validateFormData(formData) {
+        const errors = [];
+        
+        if (!formData.name || formData.name.trim().length < 2) {
+            errors.push('Имя должно содержать минимум 2 символа');
+        }
+        
+        if (!formData.callsign || formData.callsign.trim().length < 2) {
+            errors.push('Позывной должен содержать минимум 2 символа');
+        }
+        
+        if (!formData.age || formData.age < 14 || formData.age > 60) {
+            errors.push('Возраст должен быть от 14 до 60 лет');
+        }
+        
+        if (!formData.discordNick || !formData.discordNick.includes('#')) {
+            errors.push('Укажите корректный Discord ник (формат: username#1234)');
+        }
+        
+        if (errors.length > 0) {
+            showNotification('Ошибки в форме: ' + errors.join(', '), 'error');
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Создание embed для заявки
+    function createApplicationEmbed(formData) {
+        return {
+            title: "🎯 НОВАЯ ЗАЯВКА В CRAMER",
+            color: 0x228B22,
+            fields: [
+                { name: "👤 Полное имя", value: sanitizeText(formData.name).substring(0, 256) || "Не указано", inline: true },
+                { name: "🎖️ Позывной", value: sanitizeText(formData.callsign).substring(0, 256) || "Не указано", inline: true },
+                { name: "🔞 Возраст", value: formData.age?.toString().substring(0, 3) || "Не указано", inline: true },
+                { name: "📧 Email", value: sanitizeText(formData.email).substring(0, 256) || "Не указано", inline: true },
+                { name: "🎮 Roblox ник", value: sanitizeText(formData.robloxNick).substring(0, 256) || "Не указано", inline: true },
+                { name: "💬 Discord ник", value: sanitizeText(formData.discordNick).substring(0, 256) || "Не указано", inline: true },
+                { name: "⚔️ Подразделение", value: getUnitText(formData.unit) || "Не указано", inline: true },
+                { name: "📝 Мотивация", value: sanitizeText(formData.motivation || "Не указано").substring(0, 1024) },
+                { name: "🕒 Время отправки", value: new Date().toLocaleString('ru-RU'), inline: true },
+                { name: "🌐 Источник", value: window.location.hostname, inline: true }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: { 
+                text: "ЧВК CRAMER - Защищенная система обработки заявок"
+            }
+        };
+    }
+
+    // Санитизация текста
+    function sanitizeText(text) {
+        if (!text) return '';
+        return text.toString().replace(/[<>]/g, '');
+    }
+
+    // Вспомогательные функции
+    function getUnitText(unit) {
+        const units = {
+            'hammers': 'Молоты (Штурм)',
+            'shadows': 'Тени (Спецназ)',
+            'logistics': 'Логистика (Обеспечение)'
+        };
+        return units[unit] || unit;
+    }
+
+    // Обработка формы с улучшенной валидацией
+    document.getElementById('recruitmentForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('recruitmentSubmitBtn');
+        const originalText = submitBtn.innerHTML;
+        
+        submitBtn.innerHTML = '<div class="spinner"></div>Отправка...';
+        submitBtn.disabled = true;
+
+        // Сбор данных с валидацией
+        const formData = {
+            name: document.getElementById('name').value.trim(),
+            callsign: document.getElementById('callsign').value.trim(),
+            age: parseInt(document.getElementById('age').value),
+            email: document.getElementById('email').value.trim(),
+            robloxNick: document.getElementById('robloxNick').value.trim(),
+            discordNick: document.getElementById('discordNick').value.trim(),
+            unit: document.getElementById('unit').value,
+            motivation: document.getElementById('motivation').value.trim()
+        };
+
+        const success = await sendToDiscord(formData);
+        
+        if (success) {
+            showNotification('✅ Заявка отправлена! Мы свяжемся с вами в течение 24 часов.', 'success');
+            this.reset();
+        } else {
+            showNotification('❌ Ошибка отправки. Пожалуйста, свяжитесь с нами через Discord: discord.gg/xMxmXjGpHf', 'error');
         }
 
-        // Обработка формы с улучшенной валидацией
-        document.getElementById('recruitmentForm').addEventListener('submit', async function(e) {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+
+    // Уведомления
+    function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeWebhook();
+        
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let modal of modals) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+    });
+
+    // Плавная прокрутка
+    document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const submitBtn = document.getElementById('recruitmentSubmitBtn');
-            const originalText = submitBtn.innerHTML;
-            
-            submitBtn.innerHTML = '<div class="spinner"></div>Отправка...';
-            submitBtn.disabled = true;
-
-            // Сбор данных с валидацией
-            const formData = {
-                name: document.getElementById('name').value.trim(),
-                callsign: document.getElementById('callsign').value.trim(),
-                age: document.getElementById('age').value,
-                email: document.getElementById('email').value.trim(),
-                robloxNick: document.getElementById('robloxNick').value.trim(),
-                discordNick: document.getElementById('discordNick').value.trim(),
-                unit: document.getElementById('unit').value,
-                motivation: document.getElementById('motivation').value.trim()
-            };
-
-            // Базовая валидация
-            if (!formData.name || !formData.callsign || !formData.discordNick) {
-                showNotification('Пожалуйста, заполните все обязательные поля', 'error');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                return;
-            }
-
-            if (formData.age < 14 || formData.age > 60) {
-                showNotification('Возраст должен быть от 14 до 60 лет', 'error');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                return;
-            }
-
-            const success = await sendToDiscord(formData, 'recruitment');
-            
-            if (success) {
-                showNotification('Заявка отправлена! Мы свяжемся с вами в течение 24 часов.', 'success');
-                this.reset();
-            } else {
-                showNotification('Ошибка отправки. Пожалуйста, попробуйте еще раз или свяжитесь с нами через Discord.', 'error');
-            }
-
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
-
-        // Уведомления
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
-        }
-
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeWebhook();
-            
-            window.onclick = function(event) {
-                const modals = document.getElementsByClassName('modal');
-                for (let modal of modals) {
-                    if (event.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                }
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
-
-        // Плавная прокрутка
-        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-
-        // Открытие внешних ссылок с подтверждением
-        document.querySelectorAll('a[target="_blank"]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                showNotification(`Переход на ${this.textContent.trim()}`, 'success');
-            });
-        });
+    });
     </script>
 </body>
 </html>
