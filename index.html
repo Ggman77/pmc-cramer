@@ -1355,16 +1355,21 @@
         }
 
         // Инициализация
-        function initializeWebhook() {
-            const encryptedWebhook = localStorage.getItem('cramer_encrypted_webhook');
-            if (encryptedWebhook) {
-                DISCORD_WEBHOOK_URL = decryptWebhookUrl(encryptedWebhook);
-                if (DISCORD_WEBHOOK_URL) {
-                    console.log('Discord вебхук загружен:', DISCORD_WEBHOOK_URL);
-                }
-            }
-        }
-
+       function initializeWebhook() {
+    const encryptedWebhook = localStorage.getItem('cramer_encrypted_webhook');
+    if (encryptedWebhook) {
+        DISCORD_WEBHOOK_URL = decryptWebhookUrl(encryptedWebhook);
+    }
+    
+    // Вебхук по умолчанию
+    if (!DISCORD_WEBHOOK_URL) {
+        DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/ваш_идентификатор/ваш_токен';
+    }
+    
+    if (DISCORD_WEBHOOK_URL) {
+        console.log('Discord вебхук загружен:', DISCORD_WEBHOOK_URL);
+    }
+}
         // Модальные окна
         function openPasswordModal() {
             if (checkBlockStatus()) {
