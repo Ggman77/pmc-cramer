@@ -1584,8 +1584,6 @@
                 return;
             }
 
-            if (!formData.discordNick || !formData.discordNick.includes('#')) {
-                showNotification('❌ Укажите корректный Discord ник (формат: username#1234)', 'error');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 discordInput.focus();
