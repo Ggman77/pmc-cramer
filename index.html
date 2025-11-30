@@ -1131,7 +1131,7 @@
         <div class="container">
             <h2 class="section-title">Присоединиться к CRAMER</h2>
             <div class="recruitment-form">
-                <form id="recruitmentForm">
+                <form id="recruitmentForm" method="POST">
                     <div class="form-group">
                         <label for="name">Полное имя *</label>
                         <input type="text" id="name" name="name" required maxlength="100">
@@ -1234,6 +1234,51 @@
         function initialize() {
             console.log('🚀 Система ЧВК CRAMER запущена');
             console.log('📝 Вебхук:', ACTIVE_WEBHOOK ? 'Настроен' : 'Не настроен');
+            
+            // Восстановление данных формы при загрузке страницы (опционально)
+            restoreFormData();
+        }
+
+        // Сохранение данных формы в localStorage
+        function saveFormData(formData) {
+            try {
+                localStorage.setItem('cramer_application_draft', JSON.stringify(formData));
+            } catch (e) {
+                console.log('Не удалось сохранить черновик заявки');
+            }
+        }
+
+        // Восстановление данных формы
+        function restoreFormData() {
+            try {
+                const saved = localStorage.getItem('cramer_application_draft');
+                if (saved) {
+                    const formData = JSON.parse(saved);
+                    
+                    // Заполняем поля формы сохраненными данными
+                    document.getElementById('name').value = formData.name || '';
+                    document.getElementById('callsign').value = formData.callsign || '';
+                    document.getElementById('age').value = formData.age || '';
+                    document.getElementById('email').value = formData.email || '';
+                    document.getElementById('robloxNick').value = formData.robloxNick || '';
+                    document.getElementById('discordNick').value = formData.discordNick || '';
+                    document.getElementById('unit').value = formData.unit || '';
+                    document.getElementById('motivation').value = formData.motivation || '';
+                    
+                    console.log('📝 Данные формы восстановлены из черновика');
+                }
+            } catch (e) {
+                console.log('Не удалось восстановить черновик заявки');
+            }
+        }
+
+        // Очистка сохраненных данных формы
+        function clearFormData() {
+            try {
+                localStorage.removeItem('cramer_application_draft');
+            } catch (e) {
+                console.log('Не удалось очистить черновик заявки');
+            }
         }
 
         // Проверка блокировки
@@ -1472,7 +1517,7 @@
                     { name: "🎮 Roblox ник", value: formData.robloxNick || "Не указано", inline: true },
                     { name: "💬 Discord ник", value: formData.discordNick || "Не указано", inline: true },
                     { name: "⚔️ Подразделение", value: getUnitText(formData.unit) || "Не указано", inline: true },
-                    { name: "📝 Мотивация", value: formData.motivation?.substring(0, 1000) || "Не указано" },
+                    { name: "📝 Мотивация", value: formData.motivation?.substring(0, 1000) + (formData.motivation?.length > 1000 ? "..." : "") || "Не указано" },
                     { name: "🕒 Время отправки", value: new Date().toLocaleString('ru-RU'), inline: true },
                     { name: "🌐 IP", value: "Защищено", inline: true }
                 ],
@@ -1493,7 +1538,7 @@
                     body: JSON.stringify({ 
                         embeds: [embed],
                         username: 'CRAMER Recruitment Bot',
-                        avatar_url: 'https://i.imgur.com/7QqYh6c.png' // Можно заменить на ваше лого
+                        avatar_url: 'https://i.imgur.com/7QqYh6c.png'
                     })
                 });
 
@@ -1523,7 +1568,7 @@
             return units[unit] || unit;
         }
 
-        // 🎯 ИСПРАВЛЕННАЯ ОБРАБОТКА ФОРМЫ
+        // 🎯 ИСПРАВЛЕННАЯ ОБРАБОТКА ФОРМЫ - ДАННЫЕ НЕ ПРОПАДАЮТ
         document.getElementById('recruitmentForm').addEventListener('submit', async function(e) {
             e.preventDefault(); // Предотвращаем стандартную отправку
             
@@ -1535,7 +1580,6 @@
             submitBtn.disabled = true;
 
             // Сохраняем ссылки на элементы формы
-            const form = this;
             const nameInput = document.getElementById('name');
             const callsignInput = document.getElementById('callsign');
             const ageInput = document.getElementById('age');
@@ -1558,6 +1602,9 @@
             };
 
             console.log('📝 Собранные данные:', formData);
+
+            // Сохраняем данные в черновик
+            saveFormData(formData);
 
             // Простая валидация
             if (!formData.name || formData.name.length < 2) {
@@ -1584,8 +1631,16 @@
                 return;
             }
 
-            if (!formData.discordNick || !formData.discordNick.includes('#')) {
-                showNotification('❌ Укажите корректный Discord ник (формат: username#1234)', 'error');
+            if (!formData.email || !formData.email.includes('@')) {
+                showNotification('❌ Введите корректный email адрес', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                emailInput.focus();
+                return;
+            }
+
+            if (!formData.discordNick) {
+                showNotification('❌ Укажите ваш Discord ник', 'error');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 discordInput.focus();
@@ -1598,15 +1653,35 @@
             if (success) {
                 showNotification('✅ Заявка отправлена! Мы свяжемся с вами в течение 24 часов.', 'success');
                 // Очищаем форму только при успешной отправке
-                form.reset();
+                this.reset();
+                // Очищаем черновик
+                clearFormData();
             } else {
-                showNotification('❌ Ошибка отправки. Данные сохранены в форме. Свяжитесь с нами через Discord: discord.gg/xMxmXjGpHf', 'error');
+                showNotification('❌ Ошибка отправки. Данные сохранены. Проверьте подключение и попробуйте снова.', 'error');
                 // НЕ очищаем форму - данные остаются для редактирования
+                // Данные уже сохранены в черновике
             }
 
             // Восстанавливаем кнопку в любом случае
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
+        });
+
+        // Автосохранение при изменении полей (дополнительная защита)
+        document.querySelectorAll('#recruitmentForm input, #recruitmentForm select, #recruitmentForm textarea').forEach(element => {
+            element.addEventListener('input', function() {
+                const formData = {
+                    name: document.getElementById('name').value.trim(),
+                    callsign: document.getElementById('callsign').value.trim(),
+                    age: document.getElementById('age').value,
+                    email: document.getElementById('email').value.trim(),
+                    robloxNick: document.getElementById('robloxNick').value.trim(),
+                    discordNick: document.getElementById('discordNick').value.trim(),
+                    unit: document.getElementById('unit').value,
+                    motivation: document.getElementById('motivation').value.trim()
+                };
+                saveFormData(formData);
+            });
         });
 
         // Уведомления
