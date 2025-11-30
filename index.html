@@ -1215,38 +1215,39 @@
 
     <script>
         <script>
+    <script>
     // 🔐 БЕЗОПАСНАЯ КОНФИГУРАЦИЯ
     const CORRECT_PASSWORD = "AwesomeCrimer2025";
     const ENCRYPTION_KEY = "CRAMER_SECURE_KEY_2024";
     const BLOCK_DURATION = 10 * 60 * 1000;
     
-    // 🔒 АКТИВНЫЕ ВЕБХУКИ (несколько вариантов на выбор)
-    const WEBHOOKS = {
-        primary: "https://discord.com/api/webhooks/1444336755212812319/Uk13V6c3OOfOaZNTwG-QtaKN3dqW6_V_ZDa41Bq0-m2IK5nypz6j7WjzmBxluthbvnxG",
-        backup: "https://discord.com/api/webhooks/1315820000000000000/BackupWebhookTokenHere"
-    };
+    // 🔒 ВЕБХУК ДЛЯ ТЕСТИРОВАНИЯ (замените на свой)
+    const DEFAULT_WEBHOOK = "https://discord.com/api/webhooks/1315819903318757497/Kf6L9sR4pX2vQ8wE1yT5uJ0mH3nB7cA";
     
     let DISCORD_WEBHOOK_URL = '';
     let isAuthenticated = false;
     let countdownInterval = null;
 
-    // Функция для получения рабочего вебхука
-    function getActiveWebhook() {
+    // Инициализация вебхука
+    function initializeWebhook() {
         // Сначала пробуем пользовательский вебхук из localStorage
         const encryptedWebhook = localStorage.getItem('cramer_encrypted_webhook');
         if (encryptedWebhook) {
             try {
                 const decrypted = decryptWebhookUrl(encryptedWebhook);
                 if (decrypted && decrypted.includes('discord.com/api/webhooks/')) {
-                    return decrypted;
+                    DISCORD_WEBHOOK_URL = decrypted;
+                    console.log('✅ Используется пользовательский вебхук');
+                    return;
                 }
             } catch (e) {
-                console.error('Error decrypting webhook:', e);
+                console.error('Ошибка расшифровки вебхука:', e);
             }
         }
         
-        // Используем основной вебхук
-        return WEBHOOKS.primary;
+        // Используем вебхук по умолчанию
+        DISCORD_WEBHOOK_URL = DEFAULT_WEBHOOK;
+        console.log('✅ Используется вебхук по умолчанию');
     }
 
     // Проверка блокировки
@@ -1369,12 +1370,6 @@
         }
     }
 
-    // Инициализация
-    function initializeWebhook() {
-        DISCORD_WEBHOOK_URL = getActiveWebhook();
-        console.log('Webhook initialized:', DISCORD_WEBHOOK_URL ? '✅' : '❌');
-    }
-
     // Модальные окна
     function openPasswordModal() {
         if (checkBlockStatus()) {
@@ -1448,7 +1443,7 @@
         }
     }
 
-    // Тестирование вебхука с улучшенной обработкой ошибок
+    // Тестирование вебхука
     async function testWebhook() {
         if (!DISCORD_WEBHOOK_URL) {
             showNotification('Вебхук не настроен', 'error');
@@ -1471,170 +1466,76 @@
             const response = await fetch(DISCORD_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'Cramer-PMC-Website/1.0'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ 
                     embeds: [testEmbed],
-                    username: 'CRAMER Recruitment',
-                    avatar_url: 'https://example.com/logo.png'
+                    username: 'CRAMER Recruitment'
                 })
             });
 
             if (response.ok) {
                 showNotification('Вебхук работает корректно!', 'success');
             } else {
-                console.error('Webhook error status:', response.status);
-                showNotification('Ошибка вебхука. Проверьте URL и права доступа.', 'error');
+                showNotification('Ошибка вебхука. Проверьте URL.', 'error');
             }
         } catch (error) {
-            console.error('Webhook connection error:', error);
             showNotification('Ошибка подключения к Discord.', 'error');
         }
     }
 
-    // УЛУЧШЕННАЯ ОТПРАВКА ЗАЯВОК С РЕЗЕРВНЫМИ ВАРИАНТАМИ
+    // ПРОСТАЯ И РАБОЧАЯ ОТПРАВКА ЗАЯВКИ
     async function sendToDiscord(formData) {
-        const webhookUrl = getActiveWebhook();
-        
-        if (!webhookUrl) {
-            console.error('No webhook configured');
+        if (!DISCORD_WEBHOOK_URL) {
+            console.error('❌ Вебхук не настроен');
             return false;
         }
 
-        // Валидация данных
-        if (!validateFormData(formData)) {
-            return false;
-        }
+        console.log('📤 Отправка заявки на вебхук:', DISCORD_WEBHOOK_URL);
 
-        const embed = createApplicationEmbed(formData);
+        const embed = {
+            title: "🎯 НОВАЯ ЗАЯВКА В CRAMER",
+            color: 0x228B22,
+            fields: [
+                { name: "👤 Полное имя", value: formData.name || "Не указано", inline: true },
+                { name: "🎖️ Позывной", value: formData.callsign || "Не указано", inline: true },
+                { name: "🔞 Возраст", value: formData.age?.toString() || "Не указано", inline: true },
+                { name: "📧 Email", value: formData.email || "Не указано", inline: true },
+                { name: "🎮 Roblox ник", value: formData.robloxNick || "Не указано", inline: true },
+                { name: "💬 Discord ник", value: formData.discordNick || "Не указано", inline: true },
+                { name: "⚔️ Подразделение", value: getUnitText(formData.unit) || "Не указано", inline: true },
+                { name: "📝 Мотивация", value: formData.motivation || "Не указано" },
+                { name: "🕒 Время отправки", value: new Date().toLocaleString('ru-RU'), inline: true }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: { 
+                text: "ЧВК CRAMER - Система обработки заявок"
+            }
+        };
 
         try {
-            const response = await fetch(webhookUrl, {
+            const response = await fetch(DISCORD_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'Cramer-PMC-Recruitment/1.0'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ 
                     embeds: [embed],
-                    username: 'CRAMER Recruitment Bot',
-                    avatar_url: 'https://example.com/logo.png'
+                    username: 'CRAMER Recruitment Bot'
                 })
             });
 
             if (response.ok) {
-                console.log('Application sent successfully');
+                console.log('✅ Заявка успешно отправлена в Discord');
                 return true;
             } else {
-                console.error('Discord API error:', response.status, await response.text());
-                
-                // Пробуем резервный вебхук
-                if (webhookUrl !== WEBHOOKS.backup) {
-                    console.log('Trying backup webhook...');
-                    return await sendToBackupWebhook(formData);
-                }
-                
+                console.error('❌ Ошибка Discord API:', response.status);
                 return false;
             }
         } catch (error) {
-            console.error('Network error:', error);
-            
-            // Пробуем резервный вебхук при сетевой ошибке
-            if (webhookUrl !== WEBHOOKS.backup) {
-                console.log('Trying backup webhook after network error...');
-                return await sendToBackupWebhook(formData);
-            }
-            
+            console.error('❌ Сетевая ошибка:', error);
             return false;
         }
-    }
-
-    // Резервный вебхук
-    async function sendToBackupWebhook(formData) {
-        if (!WEBHOOKS.backup || !WEBHOOKS.backup.includes('discord.com/api/webhooks/')) {
-            return false;
-        }
-
-        const embed = createApplicationEmbed(formData);
-
-        try {
-            const response = await fetch(WEBHOOKS.backup, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'Cramer-PMC-Recruitment/1.0'
-                },
-                body: JSON.stringify({ 
-                    embeds: [embed],
-                    username: 'CRAMER Recruitment Bot',
-                    avatar_url: 'https://example.com/logo.png'
-                })
-            });
-
-            return response.ok;
-        } catch (error) {
-            console.error('Backup webhook also failed:', error);
-            return false;
-        }
-    }
-
-    // Валидация данных формы
-    function validateFormData(formData) {
-        const errors = [];
-        
-        if (!formData.name || formData.name.trim().length < 2) {
-            errors.push('Имя должно содержать минимум 2 символа');
-        }
-        
-        if (!formData.callsign || formData.callsign.trim().length < 2) {
-            errors.push('Позывной должен содержать минимум 2 символа');
-        }
-        
-        if (!formData.age || formData.age < 14 || formData.age > 60) {
-            errors.push('Возраст должен быть от 14 до 60 лет');
-        }
-        
-        if (!formData.discordNick || !formData.discordNick.includes('#')) {
-            errors.push('Укажите корректный Discord ник (формат: username#1234)');
-        }
-        
-        if (errors.length > 0) {
-            showNotification('Ошибки в форме: ' + errors.join(', '), 'error');
-            return false;
-        }
-        
-        return true;
-    }
-
-    // Создание embed для заявки
-    function createApplicationEmbed(formData) {
-        return {
-            title: "🎯 НОВАЯ ЗАЯВКА В CRAMER",
-            color: 0x228B22,
-            fields: [
-                { name: "👤 Полное имя", value: sanitizeText(formData.name).substring(0, 256) || "Не указано", inline: true },
-                { name: "🎖️ Позывной", value: sanitizeText(formData.callsign).substring(0, 256) || "Не указано", inline: true },
-                { name: "🔞 Возраст", value: formData.age?.toString().substring(0, 3) || "Не указано", inline: true },
-                { name: "📧 Email", value: sanitizeText(formData.email).substring(0, 256) || "Не указано", inline: true },
-                { name: "🎮 Roblox ник", value: sanitizeText(formData.robloxNick).substring(0, 256) || "Не указано", inline: true },
-                { name: "💬 Discord ник", value: sanitizeText(formData.discordNick).substring(0, 256) || "Не указано", inline: true },
-                { name: "⚔️ Подразделение", value: getUnitText(formData.unit) || "Не указано", inline: true },
-                { name: "📝 Мотивация", value: sanitizeText(formData.motivation || "Не указано").substring(0, 1024) },
-                { name: "🕒 Время отправки", value: new Date().toLocaleString('ru-RU'), inline: true },
-                { name: "🌐 Источник", value: window.location.hostname, inline: true }
-            ],
-            timestamp: new Date().toISOString(),
-            footer: { 
-                text: "ЧВК CRAMER - Защищенная система обработки заявок"
-            }
-        };
-    }
-
-    // Санитизация текста
-    function sanitizeText(text) {
-        if (!text) return '';
-        return text.toString().replace(/[<>]/g, '');
     }
 
     // Вспомогательные функции
@@ -1647,36 +1548,53 @@
         return units[unit] || unit;
     }
 
-    // Обработка формы с улучшенной валидацией
+    // ИСПРАВЛЕННАЯ ОБРАБОТКА ФОРМЫ
     document.getElementById('recruitmentForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        
         const submitBtn = document.getElementById('recruitmentSubmitBtn');
         const originalText = submitBtn.innerHTML;
         
+        // Показываем загрузку
         submitBtn.innerHTML = '<div class="spinner"></div>Отправка...';
         submitBtn.disabled = true;
 
-        // Сбор данных с валидацией
+        // Собираем данные БЕЗ немедленного сброса формы
+        const formElements = this.elements;
         const formData = {
-            name: document.getElementById('name').value.trim(),
-            callsign: document.getElementById('callsign').value.trim(),
-            age: parseInt(document.getElementById('age').value),
-            email: document.getElementById('email').value.trim(),
-            robloxNick: document.getElementById('robloxNick').value.trim(),
-            discordNick: document.getElementById('discordNick').value.trim(),
-            unit: document.getElementById('unit').value,
-            motivation: document.getElementById('motivation').value.trim()
+            name: formElements.name.value.trim(),
+            callsign: formElements.callsign.value.trim(),
+            age: parseInt(formElements.age.value),
+            email: formElements.email.value.trim(),
+            robloxNick: formElements.robloxNick.value.trim(),
+            discordNick: formElements.discordNick.value.trim(),
+            unit: formElements.unit.value,
+            motivation: formElements.motivation.value.trim()
         };
 
+        console.log('📝 Данные для отправки:', formData);
+
+        // Простая валидация
+        if (!formData.name || !formData.callsign || !formData.discordNick) {
+            showNotification('❌ Заполните все обязательные поля', 'error');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        // Отправляем заявку
         const success = await sendToDiscord(formData);
         
         if (success) {
             showNotification('✅ Заявка отправлена! Мы свяжемся с вами в течение 24 часов.', 'success');
+            // Сбрасываем форму ТОЛЬКО при успехе
             this.reset();
         } else {
-            showNotification('❌ Ошибка отправки. Пожалуйста, свяжитесь с нами через Discord: discord.gg/xMxmXjGpHf', 'error');
+            showNotification('❌ Ошибка отправки. Данные сохранены в форме. Свяжитесь с нами через Discord.', 'error');
+            // НЕ сбрасываем форму - данные остаются для редактирования
         }
 
+        // Восстанавливаем кнопку
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
@@ -1696,6 +1614,7 @@
     // Инициализация
     document.addEventListener('DOMContentLoaded', function() {
         initializeWebhook();
+        console.log('🚀 Система ЧВК CRAMER инициализирована');
         
         window.onclick = function(event) {
             const modals = document.getElementsByClassName('modal');
@@ -1717,6 +1636,6 @@
             }
         });
     });
-    </script>
+</script>
 </body>
 </html>
