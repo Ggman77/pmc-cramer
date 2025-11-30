@@ -1061,35 +1061,99 @@
 
     <script>
         <script>
+    <script>
     // 🔐 АДМИН СИСТЕМА
     const ADMIN_PASSWORD = "AwesomeCrimer2025";
     
     // 🔗 Discord Webhook URL
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1444336755212812319/Uk13V6c3OOfOaZNTwG-QtaKN3dqW6_V_ZDa41Bq0-m2IK5nypz6j7WjzmBxluthbvnxG";
     
-    // 🔗 GitHub Gist для хранения данных
-    const GIST_ID = "c4e8a1f9e6d3b2a1f8e7b6c5d4a3b2e1";
-    const GIST_FILENAME = "cramer_site_data.json";
-    
     let isEditMode = false;
     let currentElement = null;
     let changeHistory = [];
     let currentHistoryIndex = -1;
 
-    // Простое хеширование для скрытия данных
-    function simpleHash(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+    // ==================== ИСПРАВЛЕННЫЕ ФУНКЦИИ ДОСТУПА ====================
+
+    // Обработка клика по логотипу (тройной клик для доступа) - ИСПРАВЛЕННАЯ
+    function handleLogoClick(event) {
+        console.log('Логотип кликнут');
+        logoClickCount++;
+        
+        if (logoClickCount === 1) {
+            logoClickTimer = setTimeout(() => {
+                logoClickCount = 0;
+                console.log('Таймер сброшен');
+            }, 500);
+        } else if (logoClickCount === 3) {
+            console.log('Тройной клик обнаружен');
+            clearTimeout(logoClickTimer);
+            logoClickCount = 0;
+            document.getElementById('adminEditor').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('adminPassword').focus();
+            }, 100);
         }
-        return Math.abs(hash).toString(36);
     }
+
+    // Глобальные переменные для тройного клика
+    let logoClickCount = 0;
+    let logoClickTimer;
+
+    // Горячие клавиши - ИСПРАВЛЕННЫЕ
+    document.addEventListener('keydown', function(e) {
+        console.log('Клавиша нажата:', e.key, 'Ctrl:', e.ctrlKey, 'Shift:', e.shiftKey);
+        
+        // Ctrl+Shift+E для открытия редактора
+        if (e.ctrlKey && e.shiftKey && e.key === 'E') {
+            console.log('Ctrl+Shift+E обнаружено');
+            e.preventDefault();
+            document.getElementById('adminEditor').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('adminPassword').focus();
+            }, 100);
+        }
+
+        // ESC для выхода
+        if (e.key === 'Escape') {
+            if (document.getElementById('adminEditor').classList.contains('active')) {
+                document.getElementById('adminEditor').classList.remove('active');
+            }
+            if (document.getElementById('sectionsManager').classList.contains('active')) {
+                document.getElementById('sectionsManager').classList.remove('active');
+            }
+            if (document.getElementById('elementInspector').classList.contains('active')) {
+                document.getElementById('elementInspector').classList.remove('active');
+            }
+            if (isEditMode) {
+                exitEditor();
+            }
+        }
+
+        // Ctrl+S для сохранения
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            saveChanges();
+        }
+
+        // Ctrl+Z для отмены
+        if (e.ctrlKey && e.key === 'z') {
+            e.preventDefault();
+            undoChange();
+        }
+        
+        // Enter в поле пароля
+        if (e.key === 'Enter' && document.getElementById('adminEditor').classList.contains('active')) {
+            checkAdminAccess();
+        }
+    });
+
+    // ==================== ОСНОВНЫЕ ФУНКЦИИ РЕДАКТОРА ====================
 
     // Проверка доступа админа
     function checkAdminAccess() {
         const password = document.getElementById('adminPassword').value;
+        console.log('Проверка пароля:', password);
         
         if (password === ADMIN_PASSWORD) {
             document.getElementById('adminEditor').classList.remove('active');
@@ -1103,7 +1167,7 @@
         }
     }
 
-    // Переключение режима редактирования - ИСПРАВЛЕННАЯ ФУНКЦИЯ
+    // Переключение режима редактирования
     function toggleEditMode() {
         isEditMode = !isEditMode;
         document.body.classList.toggle('edit-mode', isEditMode);
@@ -1121,96 +1185,19 @@
     }
 
     // Загрузка данных сайта
-    async function loadSiteData() {
-        try {
-            // Сначала пробуем загрузить из GitHub Gist
-            const siteData = await loadFromGist();
-            if (siteData) {
-                applySiteData(siteData);
-                console.log('Данные сайта загружены из облака');
-                showNotification('Данные загружены из облака', 'success');
-            } else {
-                // Если нет данных в облаке, пробуем локальные
-                const savedData = localStorage.getItem('cramer_site_data');
-                if (savedData) {
-                    const data = JSON.parse(savedData);
-                    applySiteData(data);
-                    console.log('Данные сайта загружены локально');
-                } else {
-                    setDefaultImages();
-                }
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки данных:', error);
-            // Fallback на локальные данные
-            const savedData = localStorage.getItem('cramer_site_data');
-            if (savedData) {
+    function loadSiteData() {
+        const savedData = localStorage.getItem('cramer_site_data');
+        if (savedData) {
+            try {
                 const data = JSON.parse(savedData);
                 applySiteData(data);
-            } else {
+                console.log('Данные сайта загружены');
+            } catch (e) {
+                console.error('Ошибка загрузки данных:', e);
                 setDefaultImages();
             }
-        }
-    }
-
-    // Загрузка данных из GitHub Gist
-    async function loadFromGist() {
-        try {
-            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`);
-            if (!response.ok) {
-                throw new Error('Gist не найден');
-            }
-            
-            const gist = await response.json();
-            if (gist.files && gist.files[GIST_FILENAME]) {
-                const content = gist.files[GIST_FILENAME].content;
-                return JSON.parse(content);
-            }
-            return null;
-        } catch (error) {
-            console.error('Ошибка загрузки из Gist:', error);
-            return null;
-        }
-    }
-
-    // Сохранение данных в GitHub Gist
-    async function saveToGist(data) {
-        try {
-            // Создаем зашифрованную копию данных
-            const encryptedData = {
-                ...data,
-                _hash: simpleHash(JSON.stringify(data)),
-                _timestamp: new Date().toISOString()
-            };
-
-            const payload = {
-                files: {
-                    [GIST_FILENAME]: {
-                        content: JSON.stringify(encryptedData, null, 2)
-                    }
-                }
-            };
-
-            const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error('Ошибка сохранения в Gist');
-            }
-
-            // Также сохраняем локально как резервную копию
-            localStorage.setItem('cramer_site_data', JSON.stringify(data));
-            return true;
-        } catch (error) {
-            console.error('Ошибка сохранения в Gist:', error);
-            // Сохраняем только локально при ошибке
-            localStorage.setItem('cramer_site_data', JSON.stringify(data));
-            return false;
+        } else {
+            setDefaultImages();
         }
     }
 
@@ -1236,12 +1223,7 @@
 
     // Применение данных сайта
     function applySiteData(data) {
-        // Убираем служебные поля
-        const cleanData = {...data};
-        delete cleanData._hash;
-        delete cleanData._timestamp;
-
-        for (const [key, value] of Object.entries(cleanData)) {
+        for (const [key, value] of Object.entries(data)) {
             const elements = document.querySelectorAll(`[data-content="${key}"]`);
             elements.forEach(element => {
                 if (element.hasAttribute('data-bg-editable')) {
@@ -1261,9 +1243,9 @@
         }
         
         // Восстанавливаем цветовую схему если есть
-        if (cleanData.colorScheme) {
-            document.documentElement.style.setProperty('--primary-color', cleanData.colorScheme);
-            updateActiveColorOption(cleanData.colorScheme);
+        if (data.colorScheme) {
+            document.documentElement.style.setProperty('--primary-color', data.colorScheme);
+            updateActiveColorOption(data.colorScheme);
         }
     }
 
@@ -1284,7 +1266,7 @@
     }
 
     // Сохранение изменений
-    async function saveChanges() {
+    function saveChanges() {
         const siteData = {};
         const editableElements = document.querySelectorAll('[data-content]');
         
@@ -1311,13 +1293,9 @@
         // Сохраняем цветовую схему
         siteData.colorScheme = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
 
-        const success = await saveToGist(siteData);
-        if (success) {
-            addToHistory(siteData);
-            showNotification('Изменения сохранены в облако', 'success');
-        } else {
-            showNotification('Изменения сохранены локально', 'info');
-        }
+        localStorage.setItem('cramer_site_data', JSON.stringify(siteData));
+        addToHistory(siteData);
+        showNotification('Изменения сохранены', 'success');
     }
 
     // Добавление в историю изменений
@@ -1370,7 +1348,7 @@
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    saveToGist(data);
+                    localStorage.setItem('cramer_site_data', JSON.stringify(data));
                     applySiteData(data);
                     showNotification('Сайт успешно импортирован', 'success');
                 } catch (error) {
@@ -1391,7 +1369,7 @@
         showNotification('Редактор закрыт', 'success');
     }
 
-    // Обработка кликов по элементам - ИСПРАВЛЕННАЯ ФУНКЦИЯ
+    // Обработка кликов по элементам
     document.addEventListener('click', function(e) {
         if (!isEditMode) return;
 
@@ -1556,27 +1534,6 @@
             const hex = parseInt(x).toString(16);
             return hex.length === 1 ? '0' + hex : hex;
         }).join('');
-    }
-
-    // Обработка клика по логотипу (тройной клик для доступа)
-    let logoClickCount = 0;
-    let logoClickTimer;
-
-    function handleLogoClick(event) {
-        logoClickCount++;
-        
-        if (logoClickCount === 1) {
-            logoClickTimer = setTimeout(() => {
-                logoClickCount = 0;
-            }, 500);
-        } else if (logoClickCount === 3) {
-            clearTimeout(logoClickTimer);
-            logoClickCount = 0;
-            document.getElementById('adminEditor').classList.add('active');
-            setTimeout(() => {
-                document.getElementById('adminPassword').focus();
-            }, 100);
-        }
     }
 
     // Управление секциями
@@ -1858,53 +1815,9 @@
         }, 3000);
     }
 
-    // Горячие клавиши
-    document.addEventListener('keydown', function(e) {
-        // Ctrl+Shift+E для открытия редактора
-        if (e.ctrlKey && e.shiftKey && e.key === 'E') {
-            e.preventDefault();
-            document.getElementById('adminEditor').classList.add('active');
-            setTimeout(() => {
-                document.getElementById('adminPassword').focus();
-            }, 100);
-        }
-
-        // ESC для выхода
-        if (e.key === 'Escape') {
-            if (document.getElementById('adminEditor').classList.contains('active')) {
-                document.getElementById('adminEditor').classList.remove('active');
-            }
-            if (document.getElementById('sectionsManager').classList.contains('active')) {
-                document.getElementById('sectionsManager').classList.remove('active');
-            }
-            if (document.getElementById('elementInspector').classList.contains('active')) {
-                document.getElementById('elementInspector').classList.remove('active');
-            }
-            if (isEditMode) {
-                exitEditor();
-            }
-        }
-
-        // Ctrl+S для сохранения
-        if (e.ctrlKey && e.key === 's') {
-            e.preventDefault();
-            saveChanges();
-        }
-
-        // Ctrl+Z для отмены
-        if (e.ctrlKey && e.key === 'z') {
-            e.preventDefault();
-            undoChange();
-        }
-        
-        // Enter в поле пароля
-        if (e.key === 'Enter' && document.getElementById('adminEditor').classList.contains('active')) {
-            checkAdminAccess();
-        }
-    });
-
     // Загрузка при старте
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Сайт загружен, админ система активирована');
         loadSiteData();
         
         // Авто-сохранение каждые 30 секунд в режиме редактирования
