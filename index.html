@@ -465,7 +465,7 @@
             text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
-        /* OPERATIONS SECTION - НОВЫЕ СТИЛИ ДЛЯ КАРУСЕЛИ */
+        /* OPERATIONS SECTION */
         .operations {
             background: var(--medium-bg);
         }
@@ -577,7 +577,7 @@
             transform: scale(1.2);
         }
 
-        /* Карточка операции в карусели */
+        /* Карточка операции */
         .operation-card {
             background: var(--light-bg);
             border: 1px solid #444;
@@ -620,10 +620,6 @@
             margin-bottom: 1rem;
             font-size: 1.3rem;
             text-transform: uppercase;
-        }
-
-        .operation-card.classified h3 {
-            color: #888;
         }
 
         .operation-info {
@@ -839,6 +835,20 @@
             margin-top: 2rem;
         }
 
+        /* Превью обложек */
+        .cover-option {
+            cursor: pointer;
+            border: 2px solid #444;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cover-option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
         /* RECRUITMENT SECTION */
         .recruitment-form {
             max-width: 600px;
@@ -1012,14 +1022,6 @@
             font-family: monospace;
         }
 
-        .access-denied {
-            text-align: center;
-            padding: 2rem;
-            background: var(--light-bg);
-            border-radius: 5px;
-            border: 2px solid #dc3545;
-        }
-
         /* RESPONSIVE DESIGN */
         @media (max-width: 768px) {
             .header-content {
@@ -1081,8 +1083,7 @@
                 gap: 1rem;
             }
 
-            .units-grid,
-            .operations-grid {
+            .units-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -1096,7 +1097,6 @@
                 padding: 60px 0;
             }
 
-            /* Адаптивность для карусели */
             .operations-carousel {
                 padding: 1rem;
             }
@@ -1462,6 +1462,36 @@
                             <textarea id="opResult" rows="3" maxlength="1000"></textarea>
                         </div>
                         
+                        <!-- Секция для обложек -->
+                        <div class="form-group">
+                            <label>Быстрый выбор обложки:</label>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                                <div class="cover-option" onclick="selectCover('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')">
+                                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                                         style="width: 100%; height: 80px; object-fit: cover;">
+                                    <div style="padding: 5px; text-align: center; font-size: 0.8rem; background: var(--medium-bg);">
+                                        Военная техника
+                                    </div>
+                                </div>
+                                
+                                <div class="cover-option" onclick="selectCover('https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')">
+                                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                                         style="width: 100%; height: 80px; object-fit: cover;">
+                                    <div style="padding: 5px; text-align: center; font-size: 0.8rem; background: var(--medium-bg);">
+                                        Тактика
+                                    </div>
+                                </div>
+                                
+                                <div class="cover-option" onclick="selectCover('https://images.unsplash.com/photo-1560253023-3ec5d502959f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')">
+                                    <img src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                                         style="width: 100%; height: 80px; object-fit: cover;">
+                                    <div style="padding: 5px; text-align: center; font-size: 0.8rem; background: var(--medium-bg);">
+                                        Ночь
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Изображение (URL)</label>
@@ -1574,7 +1604,6 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <!-- Убрали логотип, оставили только текст -->
                     <div class="logo-text">
                         <div class="logo-main" style="font-size: 1.5rem;">CRAMER GROUP</div>
                         <div class="logo-subtitle">PRIVATE MILITARY COMPANY</div>
@@ -1602,10 +1631,35 @@
         const CORRECT_PASSWORD = "AwesomeCrimer2025";
         const ENCRYPTION_KEY = "CRAMER_SECURE_KEY_2024";
         const BLOCK_DURATION = 10 * 60 * 1000;
-        
+
         // 🔗 ВЕБХУК ДЛЯ ЗАЯВОК
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1315819903318757497/Kf6L9sR4pX2vQ8wE1yT5uJ0mH3nB7cA";
-        
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1444336755212812319/Uk13V6c3OOfOaZNTwG-QtaKN3dqW6_V_ZDa41Bq0-m2IK5nypz6j7WjzmBxluthbvnxG";
+
+        // 🖼️ КОЛЛЕКЦИЯ ОБЛОЖЕК ДЛЯ ОПЕРАЦИЙ
+        const OPERATION_COVERS = {
+            default: {
+                planning: { emoji: '📋', color: '#2a2a1a', label: 'Планирование' },
+                active: { emoji: '🎯', color: '#1a2a2a', label: 'Активная' },
+                completed: { emoji: '✅', color: '#1a2a1a', label: 'Завершена' },
+                cancelled: { emoji: '❌', color: '#2a1a1a', label: 'Отменена' },
+                classified: { emoji: '🔒', color: '#2a1a2a', label: 'Засекречена' }
+            },
+            
+            // Примеры URL обложек (можно добавлять свои)
+            images: [
+                "https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1560253023-3ec5d502959f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+            ],
+            
+            // Примеры видео (можно добавлять свои)
+            videos: [
+                "https://assets.mixkit.co/videos/preview/mixkit-soldier-in-a-trench-43750-large.mp4",
+                "https://assets.mixkit.co/videos/preview/mixkit-soldier-aiming-with-his-weapon-43749-large.mp4"
+            ]
+        };
+
         // 🔐 ПЕРЕМЕННЫЕ ДЛЯ ОПЕРАЦИЙ
         let operations = [];
         let currentOperationIndex = 0;
@@ -1637,6 +1691,57 @@
             high: { text: 'Высокий', color: '#fd7e14' },
             extreme: { text: 'Экстремальный', color: '#dc3545' }
         };
+
+        // 🖼️ ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ ОБЛОЖКИ ОПЕРАЦИИ
+        function getOperationCover(operation) {
+            // Если есть видео URL, используем видео
+            if (operation.videoUrl && operation.videoUrl.trim() !== '') {
+                return {
+                    type: 'video',
+                    url: operation.videoUrl,
+                    html: `
+                        <video controls style="width: 100%; height: 100%;">
+                            <source src="${operation.videoUrl}" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    `
+                };
+            }
+            
+            // Если есть изображение URL, используем изображение
+            if (operation.imageUrl && operation.imageUrl.trim() !== '') {
+                return {
+                    type: 'image',
+                    url: operation.imageUrl,
+                    html: `<img src="${operation.imageUrl}" alt="${operation.name}" style="width: 100%; height: 100%; object-fit: cover;">`
+                };
+            }
+            
+            // Если нет медиа, используем заглушку по статусу
+            const cover = OPERATION_COVERS.default[operation.status] || OPERATION_COVERS.default.classified;
+            return {
+                type: 'placeholder',
+                emoji: cover.emoji,
+                color: cover.color,
+                label: cover.label,
+                html: `
+                    <div style="width: 100%; height: 100%; background: ${cover.color}; 
+                                display: flex; flex-direction: column; align-items: center; 
+                                justify-content: center; font-size: 4rem; padding: 20px;">
+                        <div>${cover.emoji}</div>
+                        <div style="font-size: 1rem; margin-top: 10px; color: #888;">
+                            ${cover.label}
+                        </div>
+                    </div>
+                `
+            };
+        }
+
+        // 🎯 ФУНКЦИЯ ДЛЯ БЫСТРОГО ВЫБОРА ОБЛОЖКИ
+        function selectCover(url) {
+            document.getElementById('opImageUrl').value = url;
+            showNotification('✅ Обложка выбрана', 'success');
+        }
 
         // 🚀 ИНИЦИАЛИЗАЦИЯ ВСЕХ СИСТЕМ
         document.addEventListener('DOMContentLoaded', function() {
@@ -1764,7 +1869,7 @@
                     description: "Захват и эвакуация высокопоставленного цели в арктических условиях. Операция требовала специальной подготовки для работы в экстремально низких температурах.",
                     participants: ["Дэн Крамер (Командир)", "Алексей Воронов (Снайпер)", "Иван Молотов (Штурмовик)", "Михаил Тень (Разведчик)"],
                     result: "Цель успешно эвакуирована. Потерь среди оперативников нет. Задание выполнено за 72 часа.",
-                    imageUrl: "",
+                    imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
                     videoUrl: "",
                     dateAdded: new Date().toISOString()
                 },
@@ -1782,7 +1887,7 @@
                     description: "Защита нефтяной платформы от нападения боевиков. Операция включает оборону объекта и нейтрализацию угрозы.",
                     participants: ["Сергей Ястреб (Командир)", "Олег Сокол (Спецназ)", "Дмитрий Беркут (Поддержка)"],
                     result: "",
-                    imageUrl: "",
+                    imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
                     videoUrl: "",
                     dateAdded: new Date().toISOString()
                 },
@@ -1794,7 +1899,7 @@
                     priority: "critical",
                     location: "Конфиденциально",
                     client: "Государственный заказ",
-                    description: "████████████████████████████████████████████████████████████████████████████████████",
+                    description: "Секретная разведывательная операция по сбору критически важной информации. Все детали операции засекречены.",
                     participants: [],
                     result: "",
                     imageUrl: "",
@@ -1994,47 +2099,10 @@
                 participantsEl.innerHTML = '';
             }
             
-            // Медиа
+            // Медиа - используем новую функцию для обложки
             const mediaEl = document.getElementById('operationMedia');
-            if (operation.videoUrl) {
-                mediaEl.innerHTML = `
-                    <video controls style="width: 100%; height: 100%;">
-                        <source src="${operation.videoUrl}" type="video/mp4">
-                        Ваш браузер не поддерживает видео.
-                    </video>
-                `;
-            } else if (operation.imageUrl) {
-                mediaEl.innerHTML = `<img src="${operation.imageUrl}" alt="${operation.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
-            } else {
-                // Используем заглушку в зависимости от статуса
-                let placeholder = '🌍';
-                let bgColor = '#1a1a1a';
-                
-                switch(operation.status) {
-                    case 'completed':
-                        placeholder = '✅';
-                        bgColor = '#1a2a1a';
-                        break;
-                    case 'active':
-                        placeholder = '🎯';
-                        bgColor = '#1a2a2a';
-                        break;
-                    case 'planning':
-                        placeholder = '📋';
-                        bgColor = '#2a2a1a';
-                        break;
-                    case 'classified':
-                        placeholder = '🔒';
-                        bgColor = '#2a1a2a';
-                        break;
-                }
-                
-                mediaEl.innerHTML = `
-                    <div style="width: 100%; height: 100%; background: ${bgColor}; display: flex; align-items: center; justify-content: center; font-size: 5rem;">
-                        ${placeholder}
-                    </div>
-                `;
-            }
+            const cover = getOperationCover(operation);
+            mediaEl.innerHTML = cover.html;
             
             // Показываем модальное окно
             document.getElementById('operationModal').style.display = 'block';
